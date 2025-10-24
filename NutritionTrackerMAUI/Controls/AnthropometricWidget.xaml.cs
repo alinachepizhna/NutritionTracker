@@ -1,80 +1,73 @@
 ﻿using Microsoft.Maui.Controls;
-using NutritionTrackerMAUI.Models;
+using System;
 
 namespace NutritionTrackerMAUI.Controls
 {
     public partial class AnthropometricWidget : ContentView
     {
-        private AnthropometricData? _data;
-
         public AnthropometricWidget()
         {
             InitializeComponent();
         }
 
-        // Передача даних у віджет
-        public void SetData(AnthropometricData data)
+        private void OnCalculateClicked(object sender, EventArgs e)
         {
-            _data = data;
-            UpdateDisplay();
-        }
-
-        private void UpdateDisplay()
-        {
-            if (_data == null)
-                return;
-
-            double bmi = CalculateBMI(_data);
-            string category = GetBMICategory(bmi);
-            Color color = GetBMIColor(category);
-
-            HeightLabel.Text = $"{_data.Height} {(_data.MeasurementSystem.StartsWith("Metric") ? "см" : "in")}";
-            WeightLabel.Text = $"{_data.Weight} {(_data.MeasurementSystem.StartsWith("Metric") ? "кг" : "lbs")}";
-            AgeLabel.Text = $"{_data.Age}";
-            GenderLabel.Text = _data.Gender;
-            SystemLabel.Text = _data.MeasurementSystem;
-
-            BMILabel.Text = $"BMI: {bmi:F1}";
-            BMICategoryLabel.Text = category;
-            BMICategoryLabel.TextColor = color;
-        }
-
-        private double CalculateBMI(AnthropometricData data)
-        {
-            if (data.MeasurementSystem.StartsWith("Imperial"))
+            try
             {
-                // Формула для імперської системи
-                return (data.Weight / (data.Height * data.Height)) * 703;
+                double height = double.Parse(HeightEntry.Text);
+                double weight = double.Parse(WeightEntry.Text);
+                int age = int.Parse(AgeEntry.Text);
+                string gender = GenderPicker.SelectedItem?.ToString() ?? "Невідомо";
+                string system = SystemPicker.SelectedItem?.ToString() ?? "Metric";
+
+                double bmi;
+
+                if (system == "Metric")
+                {
+                    double heightMeters = height / 100.0;
+                    bmi = weight / (heightMeters * heightMeters);
+                }
+                else
+                {
+                    bmi = 703 * (weight / (height * height));
+                }
+
+                bmi = Math.Round(bmi, 1);
+                BMILabel.Text = $"BMI: {bmi}";
+
+                string category;
+                Color color;
+
+                if (bmi < 18.5)
+                {
+                    category = "Недостатня вага";
+                    color = Colors.Blue;
+                }
+                else if (bmi < 25)
+                {
+                    category = "Норма";
+                    color = Colors.Green;
+                }
+                else if (bmi < 30)
+                {
+                    category = "Надлишкова вага";
+                    color = Colors.Orange;
+                }
+                else
+                {
+                    category = "Ожиріння";
+                    color = Colors.Red;
+                }
+
+                BMICategoryLabel.Text = category;
+                BMICategoryLabel.TextColor = color;
             }
-            else
+            catch
             {
-                // Формула для метричної системи
-                double heightMeters = data.Height / 100.0;
-                return data.Weight / (heightMeters * heightMeters);
+                BMILabel.Text = "BMI: --";
+                BMICategoryLabel.Text = "Помилка вводу";
+                BMICategoryLabel.TextColor = Colors.Gray;
             }
-        }
-
-        private string GetBMICategory(double bmi)
-        {
-            if (bmi < 18.5)
-                return "Недостатня вага";
-            if (bmi < 25)
-                return "Норма";
-            if (bmi < 30)
-                return "Надмірна вага";
-            return "Ожиріння";
-        }
-
-        private Color GetBMIColor(string category)
-        {
-            return category switch
-            {
-                "Недостатня вага" => Colors.Blue,
-                "Норма" => Colors.Green,
-                "Надмірна вага" => Colors.Orange,
-                "Ожиріння" => Colors.Red,
-                _ => Colors.Gray
-            };
         }
     }
 }
