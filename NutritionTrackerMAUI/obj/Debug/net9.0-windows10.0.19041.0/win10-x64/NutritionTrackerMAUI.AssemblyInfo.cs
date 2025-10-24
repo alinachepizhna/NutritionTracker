@@ -18,7 +18,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NutritionTrackerMAUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+d43570a08b81206f03e1aec8eeb63e699b9c1c61")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+e3d759fdd1be7ff77bcc1a490a5238a6cd360383")]
 [assembly: System.Reflection.AssemblyProductAttribute("NutritionTrackerMAUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NutritionTrackerMAUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
