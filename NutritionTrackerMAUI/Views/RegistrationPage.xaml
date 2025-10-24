@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.RegistrationPage"
+             BackgroundColor="#F0F0F5"
+             Title="Реєстрація">
+
+	<Grid>
+		<Grid.Background>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+				<GradientStop Color="#D32F2F" Offset="0.0"/>
+				<GradientStop Color="#F48FB1" Offset="1.0"/>
+			</LinearGradientBrush>
+		</Grid.Background>
+
+		<Frame CornerRadius="30" Padding="30" Margin="20" BackgroundColor="White"
+               HasShadow="True" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+			<StackLayout Spacing="15">
+				<Label Text="Реєстрація" FontSize="28" FontAttributes="Bold"
+                       TextColor="#D32F2F" HorizontalOptions="Center"/>
+
+				<Entry x:Name="FirstNameEntry" Placeholder="Ім'я"
+                       BackgroundColor="#FFF0F0" TextColor="Black"/>
+				<Entry x:Name="LastNameEntry" Placeholder="Прізвище"
+                       BackgroundColor="#FFF0F0" TextColor="Black"/>
+				<Entry x:Name="EmailEntry" Placeholder="Email"
+                       BackgroundColor="#FFF0F0" TextColor="Black" Keyboard="Email"/>
+				<Label x:Name="EmailValidationLabel" TextColor="Red" FontSize="12"/>
+
+				<Grid>
+					<Entry x:Name="PasswordEntry" Placeholder="Пароль"
+                           BackgroundColor="#FFF0F0" TextColor="Black"
+                           IsPassword="True" Margin="0,0,40,0"/>
+					<Button x:Name="TogglePasswordButton"
+                            Text="👁"
+                            BackgroundColor="Transparent"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center"
+                            WidthRequest="30"
+                            HeightRequest="30"
+                            Clicked="OnTogglePasswordClicked"/>
+				</Grid>
+
+				<Label x:Name="PasswordStrengthLabel" FontSize="12"/>
+
+				<Button Text="Зареєструватися"
+                        BackgroundColor="#D32F2F" TextColor="White"
+                        CornerRadius="20" Clicked="OnRegisterClicked"/>
+			</StackLayout>
+		</Frame>
+	</Grid>
+</ContentPage>

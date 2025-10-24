@@ -1,0 +1,16 @@
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Controls.AnthropometricWidget">
+
+	<Frame CornerRadius="20" Padding="15" BackgroundColor="White" HasShadow="True">
+		<StackLayout Spacing="10">
+			<Label x:Name="HeightLabel" Text="Зріст:" FontSize="16"/>
+			<Label x:Name="WeightLabel" Text="Вага:" FontSize="16"/>
+			<Label x:Name="AgeLabel" Text="Вік:" FontSize="16"/>
+			<Label x:Name="GenderLabel" Text="Стать:" FontSize="16"/>
+
+			<Label x:Name="BMILabel" Text="BMI:" FontAttributes="Bold" FontSize="18"/>
+			<Label x:Name="BMICategoryLabel" Text="Категорія" FontAttributes="Bold" FontSize="18"/>
+		</StackLayout>
+	</Frame>
+</ContentView>
