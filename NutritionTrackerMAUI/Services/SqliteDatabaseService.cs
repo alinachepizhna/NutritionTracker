@@ -1,5 +1,6 @@
 using SQLite;
 using NutritionTrackerMAUI.Models;
+using System.IO;
 
 namespace NutritionTrackerMAUI.Services
 {
@@ -7,8 +8,15 @@ namespace NutritionTrackerMAUI.Services
     {
         private readonly SQLiteAsyncConnection _database;
 
-        public SqliteDatabaseService(string dbPath)
+        public SqliteDatabaseService()
         {
+ 
+            string folderPath = @"D:\курсач\XamarinProjects";
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            string dbPath = Path.Combine(folderPath, "nutrition.db3");
+
             _database = new SQLiteAsyncConnection(dbPath);
             _database.CreateTableAsync<User>().Wait();
             _database.CreateTableAsync<AnthropometricData>().Wait();

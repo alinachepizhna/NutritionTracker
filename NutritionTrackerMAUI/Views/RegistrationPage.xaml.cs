@@ -15,8 +15,8 @@ namespace NutritionTrackerMAUI.Views
         {
             InitializeComponent();
 
-            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "nutrition.db3");
-            _db = new SqliteDatabaseService(dbPath);
+            _db = new SqliteDatabaseService();
+
 
             PasswordEntry.TextChanged += OnPasswordChanged;
             EmailEntry.TextChanged += OnEmailChanged;
@@ -24,7 +24,7 @@ namespace NutritionTrackerMAUI.Views
             LastNameEntry.TextChanged += OnNameChanged;
         }
 
-        // ✅ Перевірка і нормалізація імені
+        //  Перевірка і нормалізація імені
         private void OnNameChanged(object? sender, TextChangedEventArgs e)
         {
             var entry = sender as Entry;
@@ -53,7 +53,7 @@ namespace NutritionTrackerMAUI.Views
             entry.TextColor = Colors.Black;
         }
 
-        // ✅ Перевірка Email
+        // Перевірка Email
         private void OnEmailChanged(object? sender, TextChangedEventArgs e)
         {
             EmailValidationLabel.Text = IsValidEmail(e.NewTextValue)
@@ -67,67 +67,69 @@ namespace NutritionTrackerMAUI.Views
             return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
 
-        // ✅ Перевірка сили пароля
+        //  Перевірка сили пароля
         private void OnPasswordChanged(object? sender, TextChangedEventArgs e)
         {
             string password = e.NewTextValue ?? string.Empty;
-            string feedback = GetPasswordFeedback(password, out Color color);
 
-            PasswordStrengthLabel.Text = feedback;
-            PasswordStrengthLabel.TextColor = color;
-        }
-
-        // 🔒 Перевірка складності з деталізацією
-        private string GetPasswordFeedback(string password, out Color color)
-        {
-            color = Colors.Red;
-
-            if (string.IsNullOrWhiteSpace(password))
-                return "Пароль порожній";
+            double score = 0;
+            string feedback = "Слабкий пароль";
+            Color color = Colors.Red;
 
             bool hasUpper = password.Any(char.IsUpper);
             bool hasLower = password.Any(char.IsLower);
             bool hasDigit = password.Any(char.IsDigit);
             bool hasSpecial = Regex.IsMatch(password, @"[!@#$%^&*(),.?""{}|<>]");
-            bool longEnough = password.Length >= 12;
+            bool longEnough = password.Length >= 12; // рекомендуемая длина
 
-            var missing = new List<string>();
-            if (!hasUpper) missing.Add("велику літеру");
-            if (!hasLower) missing.Add("малу літеру");
-            if (!hasDigit) missing.Add("цифру");
-            if (!hasSpecial) missing.Add("спецсимвол");
-            if (!longEnough) missing.Add("довжину ≥ 12");
+            // Нарахування балів
+            if (longEnough) score += 0.25;
+            if (hasUpper) score += 0.2;
+            if (hasLower) score += 0.2;
+            if (hasDigit) score += 0.2;
+            if (hasSpecial) score += 0.15;
 
-            // Список популярних паролів
-            var weakPasswords = new[] { "password", "123456", "qwerty", "admin", "letmein" };
-            if (weakPasswords.Any(p => password.Equals(p, StringComparison.OrdinalIgnoreCase)))
+            // Формируем рекомендации
+            List<string> recommendations = new List<string>();
+            if (!longEnough) recommendations.Add("≥ 12 символів");
+            if (!hasUpper) recommendations.Add("Велика літера");
+            if (!hasLower) recommendations.Add("Мала літера");
+            if (!hasDigit) recommendations.Add("Цифра");
+            if (!hasSpecial) recommendations.Add("Спецсимвол (!@#$%)");
+
+            if (score < 0.4)
             {
-                return "❌ Дуже слабкий пароль (поширений)";
+                feedback = "❌ Слабкий пароль. Додайте: " + string.Join(", ", recommendations);
+                color = Colors.Red;
             }
-
-            if (missing.Count == 0)
+            else if (score < 0.75)
             {
-                color = Colors.Green;
-                return "✅ Сильний пароль";
-            }
-
-            if (missing.Count <= 2)
-            {
+                feedback = "⚠️ Середній пароль. Рекомендації: " + string.Join(", ", recommendations);
                 color = Colors.Orange;
-                return $"⚠️ Середній пароль. Додайте: {string.Join(", ", missing)}";
+            }
+            else
+            {
+                feedback = "✅ Сильний пароль";
+                color = Colors.Green;
             }
 
-            return $"❌ Слабкий пароль. Додайте: {string.Join(", ", missing)}";
+            PasswordStrengthLabel.Text = feedback;
+            PasswordStrengthLabel.TextColor = color;
+
+            // Обновляем прогресс-бар
+            PasswordStrengthBar.Progress = score;
+            PasswordStrengthBar.ProgressColor = color;
         }
 
-        // 👁 Показати/сховати пароль
+
+        //  Показати/сховати пароль
         private void OnTogglePasswordClicked(object sender, EventArgs e)
         {
             PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
             TogglePasswordButton.Text = PasswordEntry.IsPassword ? "👁" : "🙈";
         }
 
-        // ✅ Кнопка "Зареєструватися"
+        //  Кнопка "Зареєструватися"
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
             string firstName = FirstNameEntry.Text?.Trim() ?? "";

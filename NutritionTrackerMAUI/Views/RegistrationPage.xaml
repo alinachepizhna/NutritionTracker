@@ -5,6 +5,7 @@
              BackgroundColor="#F0F0F5"
              Title="Реєстрація">
 
+	<!-- 🌅 Фоновий градієнт -->
 	<Grid>
 		<Grid.Background>
 			<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -13,24 +14,59 @@
 			</LinearGradientBrush>
 		</Grid.Background>
 
-		<Frame CornerRadius="30" Padding="30" Margin="20" BackgroundColor="White"
-               HasShadow="True" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+		<!-- 🧾 Основна рамка форми -->
+		<Frame CornerRadius="30"
+               Padding="30"
+               Margin="20"
+               BackgroundColor="White"
+               HasShadow="True"
+               VerticalOptions="Center"
+               HorizontalOptions="FillAndExpand">
+
 			<StackLayout Spacing="15">
-				<Label Text="Реєстрація" FontSize="28" FontAttributes="Bold"
-                       TextColor="#D32F2F" HorizontalOptions="Center"/>
 
-				<Entry x:Name="FirstNameEntry" Placeholder="Ім'я"
-                       BackgroundColor="#FFF0F0" TextColor="Black"/>
-				<Entry x:Name="LastNameEntry" Placeholder="Прізвище"
-                       BackgroundColor="#FFF0F0" TextColor="Black"/>
-				<Entry x:Name="EmailEntry" Placeholder="Email"
-                       BackgroundColor="#FFF0F0" TextColor="Black" Keyboard="Email"/>
-				<Label x:Name="EmailValidationLabel" TextColor="Red" FontSize="12"/>
+				<!-- Заголовок -->
+				<Label Text="Реєстрація"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="#D32F2F"
+                       HorizontalOptions="Center"/>
 
+				<!-- Ім'я користувача -->
+				<Entry x:Name="FirstNameEntry"
+                       Placeholder="Ім'я"
+                       BackgroundColor="#FFF0F0"
+                       TextColor="Black"/>
+
+				<!--  Прізвище користувача -->
+				<Entry x:Name="LastNameEntry"
+                       Placeholder="Прізвище"
+                       BackgroundColor="#FFF0F0"
+                       TextColor="Black"/>
+
+				<!-- Email -->
+				<Entry x:Name="EmailEntry"
+                       Placeholder="Email"
+                       BackgroundColor="#FFF0F0"
+                       TextColor="Black"
+                       Keyboard="Email"/>
+
+				<!-- Повідомлення про помилку Email -->
+				<Label x:Name="EmailValidationLabel"
+                       TextColor="Red"
+                       FontSize="12"/>
+
+				<!-- Поле для введення пароля -->
 				<Grid>
-					<Entry x:Name="PasswordEntry" Placeholder="Пароль"
-                           BackgroundColor="#FFF0F0" TextColor="Black"
-                           IsPassword="True" Margin="0,0,40,0"/>
+					<Entry x:Name="PasswordEntry"
+                           Placeholder="Пароль"
+                           BackgroundColor="#FFF0F0"
+                           TextColor="Black"
+                           IsPassword="True"
+                           Margin="0,0,40,0"
+                           TextChanged="OnPasswordChanged"/>
+
+					<!-- Кнопка показати/сховати пароль -->
 					<Button x:Name="TogglePasswordButton"
                             Text="👁"
                             BackgroundColor="Transparent"
@@ -41,11 +77,29 @@
                             Clicked="OnTogglePasswordClicked"/>
 				</Grid>
 
-				<Label x:Name="PasswordStrengthLabel" FontSize="12"/>
+				<!--  Індикатор сили пароля -->
+				<ProgressBar x:Name="PasswordStrengthBar"
+                             HeightRequest="6"
+                             Progress="0"
+                             Margin="0,5,0,0"
+                             BackgroundColor="#dddddd"
+                             ProgressColor="Gray"
+                             HorizontalOptions="FillAndExpand"/>
 
+				<!-- Текстовий опис сили пароля -->
+				<Label x:Name="PasswordStrengthLabel"
+                       Text=""
+                       FontSize="14"
+                       TextColor="Gray"
+                       Margin="0,3,0,0"
+                       HorizontalOptions="Start"/>
+
+				<!--  Кнопка реєстрації -->
 				<Button Text="Зареєструватися"
-                        BackgroundColor="#D32F2F" TextColor="White"
-                        CornerRadius="20" Clicked="OnRegisterClicked"/>
+                        BackgroundColor="#D32F2F"
+                        TextColor="White"
+                        CornerRadius="20"
+                        Clicked="OnRegisterClicked"/>
 			</StackLayout>
 		</Frame>
 	</Grid>
