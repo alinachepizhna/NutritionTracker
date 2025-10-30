@@ -1,44 +1,72 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NutritionTrackerMAUI.Views.GoalPage"
-             Title="&#x041C;&#x043E;&#x044F; &#x0446;&#x0456;&#x043B;&#x044C;">
+             BackgroundColor="#F0F0F5"
+             Title="Моя ціль">
 
 	<ScrollView>
-		<VerticalStackLayout Padding="20" Spacing="15">
+		<Grid Padding="20">
+			<Frame CornerRadius="30"
+                   Padding="25"
+                   Margin="0"
+                   BackgroundColor="White"
+                   HasShadow="True">
 
-			<Label Text="&#x041E;&#x0431;&#x0435;&#x0440;&#x0456;&#x0442;&#x044C; &#x0446;&#x0456;&#x043B;&#x044C;" FontSize="18"/>
-			<Picker x:Name="GoalTypePicker">
-				<Picker.ItemsSource>
-					<x:Array Type="{x:Type x:String}">
-						<x:String>&#x0421;&#x0445;&#x0443;&#x0434;&#x043D;&#x0443;&#x0442;&#x0438;</x:String>
-						<x:String>&#x041D;&#x0430;&#x0431;&#x0440;&#x0430;&#x0442;&#x0438; &#x043C;&#x0430;&#x0441;&#x0443;</x:String>
-						<x:String>&#x041F;&#x0456;&#x0434;&#x0442;&#x0440;&#x0438;&#x043C;&#x0443;&#x0432;&#x0430;&#x0442;&#x0438; &#x0432;&#x0430;&#x0433;&#x0443;</x:String>
-					</x:Array>
-				</Picker.ItemsSource>
-			</Picker>
+				<VerticalStackLayout Spacing="20">
 
-			<Label Text="&#x0414;&#x0430;&#x0442;&#x0430; &#x043F;&#x043E;&#x0447;&#x0430;&#x0442;&#x043A;&#x0443;"/>
-			<DatePicker x:Name="StartDatePicker"/>
+					<Label Text="Нова ціль"
+                           FontSize="26"
+                           FontAttributes="Bold"
+                           TextColor="#D32F2F"
+                           HorizontalOptions="Center"/>
 
-			<Label Text="&#x0414;&#x0430;&#x0442;&#x0430; &#x0437;&#x0430;&#x0432;&#x0435;&#x0440;&#x0448;&#x0435;&#x043D;&#x043D;&#x044F;"/>
-			<DatePicker x:Name="EndDatePicker"/>
+					<BoxView HeightRequest="3" Margin="0,0,0,10">
+						<BoxView.Background>
+							<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+								<GradientStop Color="#D32F2F" Offset="0.0"/>
+								<GradientStop Color="#F48FB1" Offset="1.0"/>
+							</LinearGradientBrush>
+						</BoxView.Background>
+					</BoxView>
 
-			<Label Text="&#x0421;&#x0442;&#x0440;&#x0430;&#x0442;&#x0435;&#x0433;&#x0456;&#x044F;"/>
-			<Picker x:Name="StrategyPicker">
-				<Picker.ItemsSource>
-					<x:Array Type="{x:Type x:String}">
-						<x:String>&#x041F;&#x043E;&#x0432;&#x0456;&#x043B;&#x044C;&#x043D;&#x043E;</x:String>
-						<x:String>&#x041F;&#x043E;&#x043C;&#x0456;&#x0440;&#x043D;&#x043E;</x:String>
-						<x:String>&#x0410;&#x0433;&#x0440;&#x0435;&#x0441;&#x0438;&#x0432;&#x043D;&#x043E;</x:String>
-					</x:Array>
-				</Picker.ItemsSource>
-			</Picker>
+					<!-- Тип цілі -->
+					<Label Text="Оберіть ціль" FontSize="18"/>
+					<Picker x:Name="GoalTypePicker">
+						<Picker.ItemsSource>
+							<x:Array Type="{x:Type x:String}">
+								<x:String>Схуднути</x:String>
+								<x:String>Набрати масу</x:String>
+								<x:String>Підтримувати вагу</x:String>
+							</x:Array>
+						</Picker.ItemsSource>
+					</Picker>
 
-			<Button Text="Зберегти ціль"
-                    Clicked="OnSaveGoalClicked"
-                    BackgroundColor="#007AFF"
-                    TextColor="White"/>
-		</VerticalStackLayout>
+					<!-- Дати -->
+					<Label Text="Дата початку"/>
+					<DatePicker x:Name="StartDatePicker"/>
+					<Label Text="Дата завершення"/>
+					<DatePicker x:Name="EndDatePicker"/>
+
+					<!-- Стратегія -->
+					<Label Text="Стратегія"/>
+					<Picker x:Name="StrategyPicker">
+						<Picker.ItemsSource>
+							<x:Array Type="{x:Type x:String}">
+								<x:String>Повільно</x:String>
+								<x:String>Помірно</x:String>
+								<x:String>Агресивно</x:String>
+							</x:Array>
+						</Picker.ItemsSource>
+					</Picker>
+
+					<Button Text="Зберегти ціль"
+                            BackgroundColor="#D32F2F"
+                            TextColor="White"
+                            CornerRadius="20"
+                            Clicked="OnSaveGoalClicked"/>
+
+				</VerticalStackLayout>
+			</Frame>
+		</Grid>
 	</ScrollView>
 </ContentPage>
