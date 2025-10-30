@@ -519,3 +519,4 @@ D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\NutritionTrackerMAUI.sourcelink.json

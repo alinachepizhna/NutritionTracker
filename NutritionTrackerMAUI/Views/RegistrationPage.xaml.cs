@@ -169,7 +169,8 @@ namespace NutritionTrackerMAUI.Views
             await _db.AddUserAsync(user);
             await DisplayAlert("✅ Успіх", "Реєстрація успішна!", "OK");
 
-            await Navigation.PushAsync(new AnthropometricPage(user));
+            await Navigation.PushAsync(new AnthropometricPage(user, _db));
+
         }
     }
 }
