@@ -9,16 +9,17 @@ namespace NutritionTrackerMAUI.Views
     {
         private readonly User _user;
         private readonly SqliteDatabaseService _db;
+        private readonly AnthropometricWidget _widget;
 
-        // 🔹 Конструктор отримує існуючий екземпляр бази
         public AnthropometricPage(User user, SqliteDatabaseService db)
         {
             _user = user;
-            _db = db; // використовуємо той самий об’єкт, а не створюємо новий
+            _db = db;
 
             Title = "Антропометричні дані";
 
-            var widget = new AnthropometricWidget(_user, _db);
+            _widget = new AnthropometricWidget(_user, _db);
+            _widget.CalculationCompleted += OnCalculationCompleted;
 
             Content = new ScrollView
             {
@@ -26,9 +27,21 @@ namespace NutritionTrackerMAUI.Views
                 {
                     Padding = 20,
                     Spacing = 15,
-                    Children = { widget }
+                    Children = { _widget }
                 }
             };
+        }
+
+        private async void OnCalculationCompleted(object sender, EventArgs e)
+        {
+            // Переходимо на GoalPage
+            await Navigation.PushAsync(new GoalPage(_user, _db));
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            _widget.CalculationCompleted -= OnCalculationCompleted;
         }
     }
 }

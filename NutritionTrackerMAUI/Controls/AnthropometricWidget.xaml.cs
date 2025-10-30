@@ -2,7 +2,6 @@
 using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System;
-using System.Threading.Tasks;
 
 namespace NutritionTrackerMAUI.Controls
 {
@@ -11,11 +10,14 @@ namespace NutritionTrackerMAUI.Controls
         private readonly SqliteDatabaseService _db;
         private readonly User _currentUser;
 
+        // Подія для повідомлення сторінки, що розрахунок завершено
+        public event EventHandler CalculationCompleted;
+
         public AnthropometricWidget(User currentUser, SqliteDatabaseService db)
         {
             InitializeComponent();
-            _db = db;                 // Передаємо сервіс бази даних
-            _currentUser = currentUser; // Поточний користувач
+            _db = db;
+            _currentUser = currentUser;
         }
 
         private async void OnCalculateClicked(object sender, EventArgs e)
@@ -27,6 +29,7 @@ namespace NutritionTrackerMAUI.Controls
             string gender = GenderPicker.SelectedItem?.ToString();
             string system = SystemPicker.SelectedItem?.ToString();
 
+            // Якщо дані некоректні, показуємо повідомлення
             if (!validHeight || !validWeight || !validAge)
             {
                 BMILabel.Text = "BMI: --";
@@ -35,6 +38,7 @@ namespace NutritionTrackerMAUI.Controls
                 return;
             }
 
+            // Якщо не обрана стать або система вимірювань
             if (string.IsNullOrEmpty(gender) || string.IsNullOrEmpty(system))
             {
                 BMILabel.Text = "BMI: --";
@@ -51,7 +55,7 @@ namespace NutritionTrackerMAUI.Controls
             bmi = Math.Round(bmi, 1);
             BMILabel.Text = $"BMI: {bmi}";
 
-            // Визначення категорії
+            // Визначення категорії BMI
             string category;
             Color color;
 
@@ -63,10 +67,10 @@ namespace NutritionTrackerMAUI.Controls
             BMICategoryLabel.Text = category;
             BMICategoryLabel.TextColor = color;
 
-            // ✅ Збереження даних у базу
+            // Збереження даних у базу
             var data = new AnthropometricData
             {
-                UserId = _currentUser.Id, // Обов’язково прив'язуємо до користувача
+                UserId = _currentUser.Id,
                 Height = height,
                 Weight = weight,
                 Age = age,
@@ -74,7 +78,10 @@ namespace NutritionTrackerMAUI.Controls
                 MeasurementSystem = system
             };
 
-            await _db.AddAnthropometricDataAsync(data); // Вставка в SQLite
+            await _db.AddAnthropometricDataAsync(data);
+
+            // Виклик події, що розрахунок завершено
+            CalculationCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -3,32 +3,44 @@
   "WorkspaceRootPath": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\services\\sqlitedatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:services\\sqlitedatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\models\\anthropometricdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:models\\anthropometricdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\views\\goalpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:views\\goalpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\views\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:views\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\views\\anthropometricpage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:views\\anthropometricpage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\views\\registrationpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:views\\registrationpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\services\\sqlitedatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:services\\sqlitedatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\helpers\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:helpers\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\controls\\anthropometricwidget.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:controls\\anthropometricwidget.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\views\\anthropometricpage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:views\\anthropometricpage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\models\\goal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:models\\goal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\models\\anthropometricdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:models\\anthropometricdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|d:\\\u043A\u0443\u0440\u0441\u0430\u0447\\xamarinprojects\\nutritiontracker\\nutritiontrackermaui\\helpers\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D363FC39-EDC1-4CF7-A530-D490E29841A5}|NutritionTrackerMAUI.csproj|solutionrelative:helpers\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,25 +50,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 8,
               "Title": "User.cs",
               "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Models\\User.cs",
               "RelativeDocumentMoniker": "Models\\User.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Models\\User.cs",
               "RelativeToolTip": "Models\\User.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAQwBEAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAQwAkAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T19:35:52.121Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 7,
               "Title": "AnthropometricData.cs",
               "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Models\\AnthropometricData.cs",
               "RelativeDocumentMoniker": "Models\\AnthropometricData.cs",
@@ -65,12 +76,11 @@
               "ViewState": "AgIAAAUAAAAAAAAAAAAAwBQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T19:35:49.485Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "PasswordHasher.cs",
               "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Helpers\\PasswordHasher.cs",
               "RelativeDocumentMoniker": "Helpers\\PasswordHasher.cs",
@@ -79,18 +89,17 @@
               "ViewState": "AgIAAA8AAAAAAAAAAAAwwCUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:11:19.006Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "SqliteDatabaseService.cs",
               "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Services\\SqliteDatabaseService.cs",
               "RelativeDocumentMoniker": "Services\\SqliteDatabaseService.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Services\\SqliteDatabaseService.cs",
               "RelativeToolTip": "Services\\SqliteDatabaseService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAmAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAqwDgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:11:35.584Z",
               "IsPinned": true,
@@ -98,13 +107,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "RegistrationPage.xaml.cs",
               "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\RegistrationPage.xaml.cs",
               "RelativeDocumentMoniker": "Views\\RegistrationPage.xaml.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\RegistrationPage.xaml.cs",
               "RelativeToolTip": "Views\\RegistrationPage.xaml.cs",
-              "ViewState": "AgIAAJYAAAAAAAAAAADwv6wAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAgwJAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:12:59.248Z",
               "IsPinned": true,
@@ -118,7 +127,7 @@
               "RelativeDocumentMoniker": "Controls\\AnthropometricWidget.xaml.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Controls\\AnthropometricWidget.xaml.cs",
               "RelativeToolTip": "Controls\\AnthropometricWidget.xaml.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAYwDAAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:14:07.533Z",
               "IsPinned": true,
@@ -126,15 +135,56 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "AnthropometricPage.cs",
               "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\AnthropometricPage.cs",
               "RelativeDocumentMoniker": "Views\\AnthropometricPage.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\AnthropometricPage.cs",
               "RelativeToolTip": "Views\\AnthropometricPage.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABQAAAAAAAAAAAAlwCUAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:14:37.083Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Goal.cs",
+              "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Models\\Goal.cs",
+              "RelativeDocumentMoniker": "Models\\Goal.cs",
+              "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Models\\Goal.cs",
+              "RelativeToolTip": "Models\\Goal.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T21:02:58.912Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GoalPage.xaml.cs",
+              "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\GoalPage.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\GoalPage.xaml.cs",
+              "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\GoalPage.xaml.cs",
+              "RelativeToolTip": "Views\\GoalPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T21:02:43.992Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainPage.xaml.cs",
+              "DocumentMoniker": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\MainPage.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\MainPage.xaml.cs",
+              "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\MainPage.xaml.cs",
+              "RelativeToolTip": "Views\\MainPage.xaml.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAgwCkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T22:12:17.73Z",
               "IsPinned": true,
               "EditorCaption": ""
             }

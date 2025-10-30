@@ -14,9 +14,7 @@ namespace NutritionTrackerMAUI.Views
         public RegistrationPage()
         {
             InitializeComponent();
-
             _db = new SqliteDatabaseService();
-
 
             PasswordEntry.TextChanged += OnPasswordChanged;
             EmailEntry.TextChanged += OnEmailChanged;
@@ -24,36 +22,29 @@ namespace NutritionTrackerMAUI.Views
             LastNameEntry.TextChanged += OnNameChanged;
         }
 
-        //  Перевірка і нормалізація імені
         private void OnNameChanged(object? sender, TextChangedEventArgs e)
         {
             var entry = sender as Entry;
             if (entry == null) return;
+            string input = e.NewTextValue?.Trim() ?? "";
 
-            string input = e.NewTextValue?.Trim() ?? string.Empty;
-
-            // Дозволені лише літери, дефіс і апостроф
             if (!Regex.IsMatch(input, @"^[A-Za-zА-Яа-яІіЇїЄєҐґ'\-]*$"))
             {
                 entry.TextColor = Colors.Red;
                 return;
             }
-
-            // Довжина від 2 до 50
             if (input.Length < 2 || input.Length > 50)
             {
                 entry.TextColor = Colors.Orange;
                 return;
             }
 
-            // Title Case
             TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
             entry.Text = ti.ToTitleCase(input.ToLower());
             entry.CursorPosition = entry.Text.Length;
             entry.TextColor = Colors.Black;
         }
 
-        // Перевірка Email
         private void OnEmailChanged(object? sender, TextChangedEventArgs e)
         {
             EmailValidationLabel.Text = IsValidEmail(e.NewTextValue)
@@ -67,11 +58,9 @@ namespace NutritionTrackerMAUI.Views
             return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
 
-        //  Перевірка сили пароля
         private void OnPasswordChanged(object? sender, TextChangedEventArgs e)
         {
-            string password = e.NewTextValue ?? string.Empty;
-
+            string password = e.NewTextValue ?? "";
             double score = 0;
             string feedback = "Слабкий пароль";
             Color color = Colors.Red;
@@ -80,56 +69,37 @@ namespace NutritionTrackerMAUI.Views
             bool hasLower = password.Any(char.IsLower);
             bool hasDigit = password.Any(char.IsDigit);
             bool hasSpecial = Regex.IsMatch(password, @"[!@#$%^&*(),.?""{}|<>]");
-            bool longEnough = password.Length >= 12; // рекомендуемая длина
+            bool longEnough = password.Length >= 12;
 
-            // Нарахування балів
             if (longEnough) score += 0.25;
             if (hasUpper) score += 0.2;
             if (hasLower) score += 0.2;
             if (hasDigit) score += 0.2;
             if (hasSpecial) score += 0.15;
 
-            // Формируем рекомендации
-            List<string> recommendations = new List<string>();
+            List<string> recommendations = new();
             if (!longEnough) recommendations.Add("≥ 12 символів");
             if (!hasUpper) recommendations.Add("Велика літера");
             if (!hasLower) recommendations.Add("Мала літера");
             if (!hasDigit) recommendations.Add("Цифра");
             if (!hasSpecial) recommendations.Add("Спецсимвол (!@#$%)");
 
-            if (score < 0.4)
-            {
-                feedback = "❌ Слабкий пароль. Додайте: " + string.Join(", ", recommendations);
-                color = Colors.Red;
-            }
-            else if (score < 0.75)
-            {
-                feedback = "⚠️ Середній пароль. Рекомендації: " + string.Join(", ", recommendations);
-                color = Colors.Orange;
-            }
-            else
-            {
-                feedback = "✅ Сильний пароль";
-                color = Colors.Green;
-            }
+            if (score < 0.4) { feedback = "❌ Слабкий пароль. Додайте: " + string.Join(", ", recommendations); color = Colors.Red; }
+            else if (score < 0.75) { feedback = "⚠️ Середній пароль. Рекомендації: " + string.Join(", ", recommendations); color = Colors.Orange; }
+            else { feedback = "✅ Сильний пароль"; color = Colors.Green; }
 
             PasswordStrengthLabel.Text = feedback;
             PasswordStrengthLabel.TextColor = color;
-
-            // Обновляем прогресс-бар
             PasswordStrengthBar.Progress = score;
             PasswordStrengthBar.ProgressColor = color;
         }
 
-
-        //  Показати/сховати пароль
         private void OnTogglePasswordClicked(object sender, EventArgs e)
         {
             PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
             TogglePasswordButton.Text = PasswordEntry.IsPassword ? "👁" : "🙈";
         }
 
-        //  Кнопка "Зареєструватися"
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
             string firstName = FirstNameEntry.Text?.Trim() ?? "";
@@ -150,7 +120,6 @@ namespace NutritionTrackerMAUI.Views
                 return;
             }
 
-            // Перевірка дублю користувача
             var existingUser = await _db.GetUserAsync(firstName, lastName);
             if (existingUser != null)
             {
@@ -167,10 +136,9 @@ namespace NutritionTrackerMAUI.Views
             };
 
             await _db.AddUserAsync(user);
-            await DisplayAlert("✅ Успіх", "Реєстрація успішна!", "OK");
 
+            // Переходимо на AnthropometricPage
             await Navigation.PushAsync(new AnthropometricPage(user, _db));
-
         }
     }
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.GoalPage"
+             Title="&#x041C;&#x043E;&#x044F; &#x0446;&#x0456;&#x043B;&#x044C;">
+
+	<ScrollView>
+		<VerticalStackLayout Padding="20" Spacing="15">
+
+			<Label Text="&#x041E;&#x0431;&#x0435;&#x0440;&#x0456;&#x0442;&#x044C; &#x0446;&#x0456;&#x043B;&#x044C;" FontSize="18"/>
+			<Picker x:Name="GoalTypePicker">
+				<Picker.ItemsSource>
+					<x:Array Type="{x:Type x:String}">
+						<x:String>&#x0421;&#x0445;&#x0443;&#x0434;&#x043D;&#x0443;&#x0442;&#x0438;</x:String>
+						<x:String>&#x041D;&#x0430;&#x0431;&#x0440;&#x0430;&#x0442;&#x0438; &#x043C;&#x0430;&#x0441;&#x0443;</x:String>
+						<x:String>&#x041F;&#x0456;&#x0434;&#x0442;&#x0440;&#x0438;&#x043C;&#x0443;&#x0432;&#x0430;&#x0442;&#x0438; &#x0432;&#x0430;&#x0433;&#x0443;</x:String>
+					</x:Array>
+				</Picker.ItemsSource>
+			</Picker>
+
+			<Label Text="&#x0414;&#x0430;&#x0442;&#x0430; &#x043F;&#x043E;&#x0447;&#x0430;&#x0442;&#x043A;&#x0443;"/>
+			<DatePicker x:Name="StartDatePicker"/>
+
+			<Label Text="&#x0414;&#x0430;&#x0442;&#x0430; &#x0437;&#x0430;&#x0432;&#x0435;&#x0440;&#x0448;&#x0435;&#x043D;&#x043D;&#x044F;"/>
+			<DatePicker x:Name="EndDatePicker"/>
+
+			<Label Text="&#x0421;&#x0442;&#x0440;&#x0430;&#x0442;&#x0435;&#x0433;&#x0456;&#x044F;"/>
+			<Picker x:Name="StrategyPicker">
+				<Picker.ItemsSource>
+					<x:Array Type="{x:Type x:String}">
+						<x:String>&#x041F;&#x043E;&#x0432;&#x0456;&#x043B;&#x044C;&#x043D;&#x043E;</x:String>
+						<x:String>&#x041F;&#x043E;&#x043C;&#x0456;&#x0440;&#x043D;&#x043E;</x:String>
+						<x:String>&#x0410;&#x0433;&#x0440;&#x0435;&#x0441;&#x0438;&#x0432;&#x043D;&#x043E;</x:String>
+					</x:Array>
+				</Picker.ItemsSource>
+			</Picker>
+
+			<Button Text="Зберегти ціль"
+                    Clicked="OnSaveGoalClicked"
+                    BackgroundColor="#007AFF"
+                    TextColor="White"/>
+		</VerticalStackLayout>
+	</ScrollView>
+</ContentPage>

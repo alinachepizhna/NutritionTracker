@@ -10,7 +10,6 @@ namespace NutritionTrackerMAUI.Services
 
         public SqliteDatabaseService()
         {
- 
             string folderPath = @"D:\курсач\XamarinProjects";
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
@@ -18,8 +17,11 @@ namespace NutritionTrackerMAUI.Services
             string dbPath = Path.Combine(folderPath, "nutrition.db3");
 
             _database = new SQLiteAsyncConnection(dbPath);
+
+            // Створення таблиць
             _database.CreateTableAsync<User>().Wait();
             _database.CreateTableAsync<AnthropometricData>().Wait();
+            _database.CreateTableAsync<Goal>().Wait(); // Таблиця для цілей
         }
 
         // Додати користувача
@@ -40,5 +42,15 @@ namespace NutritionTrackerMAUI.Services
             _database.Table<AnthropometricData>()
                      .Where(d => d.UserId == userId)
                      .ToListAsync();
+
+        // Додати ціль
+        public Task<int> AddGoalAsync(Goal goal) => _database.InsertAsync(goal);
+
+        // Отримати останню ціль користувача
+        public Task<Goal?> GetLatestGoalAsync(int userId) =>
+            _database.Table<Goal>()
+                     .Where(g => g.UserId == userId)
+                     .OrderByDescending(g => g.Id)
+                     .FirstOrDefaultAsync();
     }
 }

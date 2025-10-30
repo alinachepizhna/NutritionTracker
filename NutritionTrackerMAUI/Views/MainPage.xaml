@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.MainPage"
+             Title="&#x0413;&#x043E;&#x043B;&#x043E;&#x0432;&#x043D;&#x0430;">
+
+	<VerticalStackLayout Padding="20" Spacing="15">
+
+		<Label Text="&#x0412;&#x0430;&#x0448;&#x0430; &#x043F;&#x043E;&#x0442;&#x043E;&#x0447;&#x043D;&#x0430; &#x0446;&#x0456;&#x043B;&#x044C;:"
+               FontSize="18" FontAttributes="Bold"/>
+		<Label x:Name="CurrentGoalLabel" Text="Ціль: --" FontSize="16"/>
+		<Label x:Name="CurrentStrategyLabel" Text="Стратегія: --" FontSize="16"/>
+
+		<Button Text="Нова ціль" Clicked="OnNewGoalClicked"
+                BackgroundColor="#007AFF" TextColor="White"/>
+	</VerticalStackLayout>
+</ContentPage>
