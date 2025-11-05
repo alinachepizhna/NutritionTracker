@@ -1,4 +1,4 @@
-using SQLite;
+п»їusing SQLite;
 
 namespace NutritionTrackerMAUI.Models
 {
@@ -7,10 +7,14 @@ namespace NutritionTrackerMAUI.Models
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public int UserId { get; set; }        // Прив’язка до користувача
-        public string Description { get; set; } = string.Empty;  // Опис цілі
-        public DateTime StartDate { get; set; }                 // Початок
-        public DateTime EndDate { get; set; }                   // Кінець
-        public string Strategy { get; set; } = string.Empty;     // Напр. "Дефіцит", "Підтримка", "Надлишок"
+        public int UserId { get; set; } // РџСЂРёРІвЂ™СЏР·РєР° РґРѕ РєРѕСЂРёСЃС‚СѓРІР°С‡Р°
+
+        public string Description { get; set; } = string.Empty; // РќР°РїСЂРёРєР»Р°Рґ: "РЎС…СѓРґРЅРµРЅРЅСЏ", "РќР°Р±С–СЂ РІР°РіРё"
+
+        public DateTime StartDate { get; set; }
+
+        public DateTime EndDate { get; set; }
+
+        public int StrategyId { get; set; } // рџ”— Р·РѕРІРЅС–С€РЅС–Р№ РєР»СЋС‡ РґРѕ С‚Р°Р±Р»РёС†С– Strategy
     }
 }

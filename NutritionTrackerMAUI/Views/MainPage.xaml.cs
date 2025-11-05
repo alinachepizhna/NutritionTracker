@@ -23,14 +23,15 @@ namespace NutritionTrackerMAUI.Views
             var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
             if (lastGoal != null)
             {
-                DisplayCurrentGoal(lastGoal);
+                var strategy = await _db.GetStrategyByIdAsync(lastGoal.StrategyId);
+                DisplayCurrentGoal(lastGoal, strategy?.Name ?? "Невідомо");
             }
         }
 
-        public void DisplayCurrentGoal(Goal goal)
+        public void DisplayCurrentGoal(Goal goal, string strategyName)
         {
             CurrentGoalLabel.Text = $"Ціль: {goal.Description}";
-            CurrentStrategyLabel.Text = $"Стратегія: {goal.Strategy}";
+            CurrentStrategyLabel.Text = $"Стратегія: {strategyName}";
         }
 
         private async void OnNewGoalClicked(object sender, EventArgs e)

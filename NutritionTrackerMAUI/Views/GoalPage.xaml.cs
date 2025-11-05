@@ -17,6 +17,26 @@ namespace NutritionTrackerMAUI.Views
 
             StartDatePicker.Date = DateTime.Today;
             EndDatePicker.Date = DateTime.Today.AddDays(30);
+
+            LoadStrategiesAsync(); // завантаження стратегій при запуску
+        }
+
+        private async void LoadStrategiesAsync()
+        {
+            var strategies = await _db.GetAllStrategiesAsync();
+
+            // Якщо стратегій ще немає — створюємо базові
+            if (strategies.Count == 0)
+            {
+                await _db.AddStrategyAsync(new Strategy { Name = "Дефіцит калорій", Description = "Для схуднення" });
+                await _db.AddStrategyAsync(new Strategy { Name = "Підтримка", Description = "Для збереження поточної ваги" });
+                await _db.AddStrategyAsync(new Strategy { Name = "Надлишок калорій", Description = "Для набору м’язової маси" });
+
+                strategies = await _db.GetAllStrategiesAsync();
+            }
+
+            StrategyPicker.ItemsSource = strategies;
+            StrategyPicker.ItemDisplayBinding = new Binding("Name");
         }
 
         private async void OnSaveGoalClicked(object sender, EventArgs e)
@@ -33,19 +53,21 @@ namespace NutritionTrackerMAUI.Views
                 return;
             }
 
+            var selectedStrategy = (Strategy)StrategyPicker.SelectedItem;
+
             var goal = new Goal
             {
                 UserId = _user.Id,
                 Description = GoalTypePicker.SelectedItem.ToString(),
-                Strategy = StrategyPicker.SelectedItem.ToString(),
                 StartDate = StartDatePicker.Date,
-                EndDate = EndDatePicker.Date
+                EndDate = EndDatePicker.Date,
+                StrategyId = selectedStrategy.Id
             };
 
             await _db.AddGoalAsync(goal);
             await DisplayAlert("✅ Успіх", "Ціль збережена!", "OK");
 
-            // Відкриваємо MainPage як нову root-сторінку
+            // Повертаємо користувача на головну
             Application.Current.MainPage = new NavigationPage(new MainPage(_user, _db));
         }
     }

@@ -1,4 +1,4 @@
-using SQLite;
+п»їusing SQLite;
 using NutritionTrackerMAUI.Models;
 using System.IO;
 
@@ -10,7 +10,7 @@ namespace NutritionTrackerMAUI.Services
 
         public SqliteDatabaseService()
         {
-            string folderPath = @"D:\курсач\XamarinProjects";
+            string folderPath = @"D:\РєСѓСЂСЃР°С‡\XamarinProjects";
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
@@ -18,39 +18,81 @@ namespace NutritionTrackerMAUI.Services
 
             _database = new SQLiteAsyncConnection(dbPath);
 
-            // Створення таблиць
+            // --- РЎС‚РІРѕСЂРµРЅРЅСЏ С‚Р°Р±Р»РёС†СЊ ---
             _database.CreateTableAsync<User>().Wait();
             _database.CreateTableAsync<AnthropometricData>().Wait();
-            _database.CreateTableAsync<Goal>().Wait(); // Таблиця для цілей
+            _database.CreateTableAsync<Strategy>().Wait(); // РўР°Р±Р»РёС†СЏ СЃС‚СЂР°С‚РµРіС–Р№
+            _database.CreateTableAsync<Goal>().Wait();     // РўР°Р±Р»РёС†СЏ С†С–Р»РµР№
         }
 
-        // Додати користувача
+        // ===============================
+        // рџ§© --- РљРћР РРЎРўРЈР’РђР§Р† ---
+        // ===============================
+
         public Task<int> AddUserAsync(User user) => _database.InsertAsync(user);
 
-        // Отримати користувача за ім'ям та прізвищем
         public Task<User?> GetUserAsync(string firstName, string lastName) =>
             _database.Table<User>()
                      .Where(u => u.FirstName == firstName && u.LastName == lastName)
                      .FirstOrDefaultAsync();
 
-        // Додати антропометричні дані
+
+        // ===============================
+        // рџ“Џ --- РђРќРўР РћРџРћРњР•РўР Р†РЇ ---
+        // ===============================
+
         public Task<int> AddAnthropometricDataAsync(AnthropometricData data) =>
             _database.InsertAsync(data);
 
-        // Отримати всі дані користувача
         public Task<List<AnthropometricData>> GetUserDataAsync(int userId) =>
             _database.Table<AnthropometricData>()
                      .Where(d => d.UserId == userId)
                      .ToListAsync();
 
-        // Додати ціль
+
+        // ===============================
+        // рџЋЇ --- Р¦Р†Р›Р† ---
+        // ===============================
+
         public Task<int> AddGoalAsync(Goal goal) => _database.InsertAsync(goal);
 
-        // Отримати останню ціль користувача
         public Task<Goal?> GetLatestGoalAsync(int userId) =>
             _database.Table<Goal>()
                      .Where(g => g.UserId == userId)
                      .OrderByDescending(g => g.Id)
                      .FirstOrDefaultAsync();
+
+        // РћС‚СЂРёРјР°С‚Рё С†С–Р»СЊ СЂР°Р·РѕРј Р·С– СЃС‚СЂР°С‚РµРіС–С”СЋ
+        public async Task<(Goal?, Strategy?)> GetLatestGoalWithStrategyAsync(int userId)
+        {
+            var goal = await GetLatestGoalAsync(userId);
+            if (goal == null)
+                return (null, null);
+
+            var strategy = await GetStrategyByIdAsync(goal.StrategyId);
+            return (goal, strategy);
+        }
+
+
+        // ===============================
+        // рџ§  --- РЎРўР РђРўР•Р“Р†Р‡ ---
+        // ===============================
+
+        public Task<int> AddStrategyAsync(Strategy strategy) => _database.InsertAsync(strategy);
+
+        public Task<List<Strategy>> GetAllStrategiesAsync() =>
+            _database.Table<Strategy>().ToListAsync();
+
+        public Task<Strategy?> GetStrategyByIdAsync(int id) =>
+            _database.Table<Strategy>()
+                     .Where(s => s.Id == id)
+                     .FirstOrDefaultAsync();
+
+        public async Task<Strategy?> GetStrategyByNameAsync(string name)
+        {
+            return await _database.Table<Strategy>()
+                                  .Where(s => s.Name == name)
+                                  .FirstOrDefaultAsync();
+        }
     }
 }
