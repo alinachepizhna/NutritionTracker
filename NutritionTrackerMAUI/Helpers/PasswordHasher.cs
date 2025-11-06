@@ -5,7 +5,7 @@ namespace NutritionTrackerMAUI.Helpers
 {
     public static class PasswordHasher
     {
-        // Метод для хешування пароля
+        // Хешування пароля
         public static string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -14,17 +14,24 @@ namespace NutritionTrackerMAUI.Helpers
             return Convert.ToBase64String(hash);
         }
 
-        // Метод для оцінки надійності пароля
+        // Перевірка пароля (порівняння хешів)
+        public static bool VerifyPassword(string enteredPassword, string storedHash)
+        {
+            string enteredHash = HashPassword(enteredPassword);
+            return enteredHash == storedHash;
+        }
+
+        // Оцінка надійності (опціонально)
         public static string GetPasswordStrength(string password)
         {
             if (string.IsNullOrEmpty(password)) return "Слабкий";
 
             int score = 0;
-            if (password.Length >= 8) score++; // Довжина >= 8 символів
-            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[A-Z]")) score++; // Велика буква
-            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[a-z]")) score++; // Мала буква
-            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[0-9]")) score++;  // Цифра
-            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[^a-zA-Z0-9]")) score++; // Спецсимвол
+            if (password.Length >= 8) score++;
+            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[A-Z]")) score++;
+            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[a-z]")) score++;
+            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[0-9]")) score++;
+            if (System.Text.RegularExpressions.Regex.IsMatch(password, "[^a-zA-Z0-9]")) score++;
 
             return score switch
             {

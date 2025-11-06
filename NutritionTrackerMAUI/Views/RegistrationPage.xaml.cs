@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 using NutritionTrackerMAUI.Helpers;
 using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
@@ -98,6 +99,10 @@ namespace NutritionTrackerMAUI.Views
         {
             PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
             TogglePasswordButton.Text = PasswordEntry.IsPassword ? "👁" : "🙈";
+        }
+        private async void OnLoginNavigateClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new LoginPage(_db));
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)

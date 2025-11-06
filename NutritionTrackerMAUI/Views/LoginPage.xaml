@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.LoginPage"
+             Title="Вхід"
+             BackgroundColor="#F0F0F5">
+
+    <VerticalStackLayout Spacing="20" Padding="30" VerticalOptions="Center">
+
+        <Label Text="Увійти"
+               FontSize="28"
+               FontAttributes="Bold"
+               TextColor="#D32F2F"
+               HorizontalOptions="Center"/>
+
+        <Entry x:Name="FirstNameEntry"
+               Placeholder="Ім'я"
+               BackgroundColor="#FFF0F0"
+               TextColor="Black"/>
+
+        <Entry x:Name="LastNameEntry"
+               Placeholder="Прізвище"
+               BackgroundColor="#FFF0F0"
+               TextColor="Black"/>
+
+        <Entry x:Name="PasswordEntry"
+               Placeholder="Пароль"
+               IsPassword="True"
+               BackgroundColor="#FFF0F0"
+               TextColor="Black"/>
+
+        <Button Text="Увійти"
+                BackgroundColor="#D32F2F"
+                TextColor="White"
+                CornerRadius="20"
+                Clicked="OnLoginClicked"/>
+
+        <Button Text="← Назад до реєстрації"
+                BackgroundColor="Transparent"
+                TextColor="#2E8B57"
+                Clicked="OnBackToRegisterClicked"/>
+
+    </VerticalStackLayout>
+</ContentPage>
