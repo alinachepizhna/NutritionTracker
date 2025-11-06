@@ -94,5 +94,35 @@ namespace NutritionTrackerMAUI.Services
                                   .Where(s => s.Name == name)
                                   .FirstOrDefaultAsync();
         }
+        // Отримати всі цілі (для заповнення списку GoalPicker)
+        public Task<List<Goal>> GetAllGoalsAsync()
+        {
+            return _database.Table<Goal>().ToListAsync();
+        }
+
+        // Отримати всі стратегії, які належать конкретній цілі
+        public Task<List<Strategy>> GetStrategiesForGoalAsync(int goalId)
+        {
+            return _database.Table<Strategy>()
+                            .Where(s => s.GoalId == goalId)
+                            .ToListAsync();
+        }
+
+        // Доступ до бази SQLite (для TrainingService)
+        public SQLiteAsyncConnection Database => _database;
+        public SQLiteAsyncConnection GetDatabase()
+        {
+            return _database;
+        }
+        // Отримати останню ціль користувача (для TrainingPlannerPage)
+        public async Task<Goal?> GetLastGoalByUserAsync(int userId)
+        {
+            return await _database.Table<Goal>()
+                .Where(g => g.UserId == userId)
+                .OrderByDescending(g => g.Id)
+                .FirstOrDefaultAsync();
+        }
+
     }
+
 }

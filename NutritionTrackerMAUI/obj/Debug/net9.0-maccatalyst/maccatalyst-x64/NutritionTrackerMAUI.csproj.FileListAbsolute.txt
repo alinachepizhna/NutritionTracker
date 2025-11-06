@@ -40,3 +40,6 @@ D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.AssemblyInfo.cs
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.csproj.CoreCompileInputs.cache
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.sourcelink.json
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\refint\NutritionTrackerMAUI.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.pdb

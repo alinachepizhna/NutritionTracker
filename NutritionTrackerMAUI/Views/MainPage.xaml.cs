@@ -1,42 +1,51 @@
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 
-namespace NutritionTrackerMAUI.Views
+namespace NutritionTrackerMAUI.Views;
+
+public partial class MainPage : TabbedPage
 {
-    public partial class MainPage : ContentPage
+    private readonly SqliteDatabaseService _db;
+    private readonly User _user;
+
+    public MainPage(User user, SqliteDatabaseService db)
     {
-        private readonly SqliteDatabaseService _db;
-        private readonly User _user;
+        _user = user ?? throw new ArgumentNullException(nameof(user));
+        _db = db ?? throw new ArgumentNullException(nameof(db));
 
-        public MainPage(User user, SqliteDatabaseService db)
+        InitializeComponent();
+
+        LoadLastGoal();
+
+        // Додаємо вкладку Планування тренувань динамічно
+        var plannerPage = new TrainingPlannerPage(_user, _db)
         {
-            InitializeComponent();
-            _db = db;
-            _user = user;
+            Title = "Планування",
+            IconImageSource = "dumbbell.png"
+        };
+        Children.Add(plannerPage);
+    }
 
-            LoadLastGoal();
+    private async void LoadLastGoal()
+    {
+        var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
+        if (lastGoal != null)
+        {
+            var strategy = await _db.GetStrategyByIdAsync(lastGoal.StrategyId);
+            CurrentGoalLabel.Text = $"Ціль: {lastGoal.Description}";
+            CurrentStrategyLabel.Text = $"Стратегія: {strategy?.Name ?? "Невідомо"}";
         }
-
-        private async void LoadLastGoal()
+        else
         {
-            var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
-            if (lastGoal != null)
-            {
-                var strategy = await _db.GetStrategyByIdAsync(lastGoal.StrategyId);
-                DisplayCurrentGoal(lastGoal, strategy?.Name ?? "�������");
-            }
+            CurrentGoalLabel.Text = "Ціль: не задано";
+            CurrentStrategyLabel.Text = "Стратегія: —";
         }
+    }
 
-        public void DisplayCurrentGoal(Goal goal, string strategyName)
-        {
-            CurrentGoalLabel.Text = $"ֳ��: {goal.Description}";
-            CurrentStrategyLabel.Text = $"��������: {strategyName}";
-        }
-
-        private async void OnNewGoalClicked(object sender, EventArgs e)
-        {
+    private async void OnNewGoalClicked(object sender, EventArgs e)
+    {
+        if (Navigation != null)
             await Navigation.PushAsync(new GoalPage(_user, _db));
-        }
     }
 }

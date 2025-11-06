@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.TrainingPlannerPage"
+             Title="Планування тренувань"
+             BackgroundColor="#F9F9F9">
+
+    <ContentPage.Resources>
+        <!-- Масив типів тренувань для Picker -->
+        <x:Array x:Key="WorkoutTypes" Type="{x:Type x:String}">
+            <x:String>Руки</x:String>
+            <x:String>Ноги</x:String>
+            <x:String>FullBody</x:String>
+            <x:String>Кардіо</x:String>
+            <x:String>Відновлення</x:String>
+        </x:Array>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="🎯 Ціль:" FontAttributes="Bold" FontSize="22"/>
+            <Label x:Name="GoalLabel" FontSize="18" TextColor="#D32F2F"/>
+
+            <Label Text="🧩 Стратегія:" FontAttributes="Bold" FontSize="22"/>
+            <Label x:Name="StrategyLabel" FontSize="18" TextColor="#D32F2F"/>
+
+            <Label Text="📆 Календар тренувань" FontAttributes="Bold" FontSize="22"/>
+
+            <CollectionView x:Name="CalendarCollection" ItemsLayout="VerticalGrid, 7" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="3"
+                               Padding="10"
+                               CornerRadius="8"
+                               BackgroundColor="{Binding BackgroundColor}"
+                               HasShadow="True">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding DateText}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="White"
+                                       FontAttributes="Bold"/>
+                                <Picker Title="Тип тренування"
+                                        ItemsSource="{StaticResource WorkoutTypes}"
+                                        SelectedItem="{Binding WorkoutType}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="💾 Зберегти план"
+                    BackgroundColor="#D32F2F"
+                    TextColor="White"
+                    CornerRadius="20"
+                    Clicked="OnSaveClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

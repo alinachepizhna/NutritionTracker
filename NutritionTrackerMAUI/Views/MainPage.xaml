@@ -1,45 +1,47 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="NutritionTrackerMAUI.Views.MainPage"
-             BackgroundColor="#F0F0F5"
-             Title="Головна">
+<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="NutritionTrackerMAUI.Views.MainPage"
+            BarBackgroundColor="#D32F2F"
+            BarTextColor="White"
+            Title="Головна">
 
-	<ScrollView>
-		<Grid Padding="20">
-			<Frame CornerRadius="30"
-                   Padding="25"
-                   Margin="0"
-                   BackgroundColor="White"
-                   HasShadow="True">
+    <!-- 🏠 Вкладка Головна -->
+    <ContentPage Title="Головна" IconImageSource="home.png" BackgroundColor="#F0F0F5">
+        <ScrollView>
+            <Grid Padding="20">
+                <Border Stroke="#D32F2F" StrokeThickness="2" Padding="25">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="30"/>
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="20">
+                        <Label Text="Ваша поточна ціль"
+                               FontSize="26"
+                               FontAttributes="Bold"
+                               TextColor="#D32F2F"
+                               HorizontalOptions="Center"/>
 
-				<VerticalStackLayout Spacing="20">
+                        <BoxView HeightRequest="3" Margin="0,0,0,10">
+                            <BoxView.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#D32F2F" Offset="0.0"/>
+                                    <GradientStop Color="#F48FB1" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </BoxView.Background>
+                        </BoxView>
 
-					<Label Text="Ваша поточна ціль"
-                           FontSize="26"
-                           FontAttributes="Bold"
-                           TextColor="#D32F2F"
-                           HorizontalOptions="Center"/>
+                        <Label x:Name="CurrentGoalLabel" Text="Ціль: --" FontSize="18"/>
+                        <Label x:Name="CurrentStrategyLabel" Text="Стратегія: --" FontSize="18"/>
 
-					<BoxView HeightRequest="3" Margin="0,0,0,10">
-						<BoxView.Background>
-							<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-								<GradientStop Color="#D32F2F" Offset="0.0"/>
-								<GradientStop Color="#F48FB1" Offset="1.0"/>
-							</LinearGradientBrush>
-						</BoxView.Background>
-					</BoxView>
+                        <Button Text="Нова ціль"
+                                BackgroundColor="#D32F2F"
+                                TextColor="White"
+                                CornerRadius="20"
+                                Clicked="OnNewGoalClicked"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </ScrollView>
+    </ContentPage>
 
-					<Label x:Name="CurrentGoalLabel" Text="Ціль: --" FontSize="18"/>
-					<Label x:Name="CurrentStrategyLabel" Text="Стратегія: --" FontSize="18"/>
-
-					<Button Text="Нова ціль"
-                            BackgroundColor="#D32F2F"
-                            TextColor="White"
-                            CornerRadius="20"
-                            Clicked="OnNewGoalClicked"/>
-
-				</VerticalStackLayout>
-			</Frame>
-		</Grid>
-	</ScrollView>
-</ContentPage>
+</TabbedPage>

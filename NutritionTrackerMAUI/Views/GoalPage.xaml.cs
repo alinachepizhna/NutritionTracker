@@ -28,9 +28,9 @@ namespace NutritionTrackerMAUI.Views
             // Якщо стратегій ще немає — створюємо базові
             if (strategies.Count == 0)
             {
-                await _db.AddStrategyAsync(new Strategy { Name = "Дефіцит калорій", Description = "Для схуднення" });
-                await _db.AddStrategyAsync(new Strategy { Name = "Підтримка", Description = "Для збереження поточної ваги" });
-                await _db.AddStrategyAsync(new Strategy { Name = "Надлишок калорій", Description = "Для набору м’язової маси" });
+                await _db.AddStrategyAsync(new Strategy { Name = "Повільно", Description = "Характеристика: низька інтенсивність, середній обсяг, акцент на відчуття тіла та техніку." });
+                await _db.AddStrategyAsync(new Strategy { Name = "Помірно", Description = "Характеристика: середня інтенсивність, різноманітність тренувань, помірне відновлення." });
+                await _db.AddStrategyAsync(new Strategy { Name = "Агресивно", Description = "Характеристика: висока інтенсивність, короткі інтервали відпочинку, високий рівень навантаження." });
 
                 strategies = await _db.GetAllStrategiesAsync();
             }

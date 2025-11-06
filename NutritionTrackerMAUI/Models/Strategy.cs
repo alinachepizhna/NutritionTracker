@@ -7,6 +7,9 @@ namespace NutritionTrackerMAUI.Models
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
+        [NotNull]
+        public int GoalId { get; set; } // 🔗 Зв’язок із конкретною ціллю
+
         [Unique, NotNull]
         public string Name { get; set; } = string.Empty;
 
