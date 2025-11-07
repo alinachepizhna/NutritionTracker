@@ -142,8 +142,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:12:59.248Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -195,8 +194,7 @@
               "ViewState": "AgIAACsAAAAAAAAAAAAMwDwAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-30T21:02:43.992Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -209,8 +207,7 @@
               "ViewState": "AgIAAHAAAAAAAAAAAAAqwIQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-23T20:11:35.584Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -223,8 +220,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T20:12:41.264Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -237,8 +233,7 @@
               "ViewState": "AgIAAAwAAAAAAAAAAAAYwAcAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-05T19:23:07.667Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -248,7 +243,7 @@
               "RelativeDocumentMoniker": "Views\\MainPage.xaml.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\MainPage.xaml.cs",
               "RelativeToolTip": "Views\\MainPage.xaml.cs",
-              "ViewState": "AgIAACwAAAAAAAAAAAAUwD4AAAAmAAAAAAAAAA==",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAuwFwAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-30T22:12:17.73Z",
               "IsPinned": true,
@@ -265,8 +260,7 @@
               "ViewState": "AgIAACkAAAAAAAAAAAAQwFIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-11-06T22:37:03.692Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -279,8 +273,7 @@
               "ViewState": "AgIAAA4AAAAAAAAAAAAYwDYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-11-06T23:04:46.949Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -290,7 +283,7 @@
               "RelativeDocumentMoniker": "Views\\TrainingPlannerPage.xaml.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\TrainingPlannerPage.xaml.cs",
               "RelativeToolTip": "Views\\TrainingPlannerPage.xaml.cs",
-              "ViewState": "AgIAAGYAAAAAAAAAAAAcwIcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAuwFkAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T21:30:35.258Z",
               "IsPinned": true,
@@ -307,8 +300,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T23:42:34.159Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -321,8 +313,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-07T00:18:15.731Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -335,8 +326,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-07T00:18:45.173Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -361,8 +351,7 @@
               "RelativeToolTip": "Models\\TrainingPlan.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T01:38:30.134Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-07T01:38:30.134Z"
             }
           ]
         }

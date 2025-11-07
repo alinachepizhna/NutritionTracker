@@ -90,8 +90,7 @@ namespace NutritionTrackerMAUI.Views
             {
                 "Повільно" => (date - _goal.StartDate).Days % 5 == 0,
                 "Помірно" => (date - _goal.StartDate).Days % 3 == 0,
-                "Агресивно" => true,
-                _ => (date - _goal.StartDate).Days % 2 == 0,
+                "Агресивно" => (date - _goal.StartDate).Days % 2 == 0,
             };
         }
 
@@ -137,10 +136,11 @@ namespace NutritionTrackerMAUI.Views
 
         // Модель для відображення дня календаря
         public class CalendarDay
-    {
-        public DateTime Date { get; set; } // Дата
-        public string DateText { get; set; } = string.Empty; // Текст дня (число)
-        public Color BackgroundColor { get; set; } = Colors.Gray; // Колір фону
-        public string WorkoutType { get; set; } = "Відпочинок"; // Тип тренування
+        {
+            public DateTime Date { get; set; } // Дата
+            public string DateText { get; set; } = string.Empty; // Текст дня (число)
+            public Color BackgroundColor { get; set; } = Colors.Gray; // Колір фону
+            public string WorkoutType { get; set; } = "Відпочинок"; // Тип тренування
+        }
     }
 }
