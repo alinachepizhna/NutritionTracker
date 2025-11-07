@@ -1,100 +1,201 @@
 ﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
-using Microsoft.Maui.Graphics;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NutritionTrackerMAUI.Views
 {
     public partial class TrainingPlannerPage : ContentPage
     {
-        private readonly SqliteDatabaseService _db; // Сервіс для роботи з базою
-        private readonly User _user; // Поточний користувач
+        private readonly SqliteDatabaseService _db;
+        private readonly User _user;
+        private Goal? _goal;
+        private Strategy? _strategy;
 
-        private Goal? _goal; // Поточна ціль користувача
-        private Strategy? _strategy; // Поточна стратегія
-
-        // Колекція для відображення календаря на сторінці планування
         public ObservableCollection<CalendarDay> CalendarDays { get; set; } = new();
+        public ObservableCollection<WorkoutProgram> Programs { get; set; } = new();
 
-        // Подія, яка повідомляє головну сторінку, що календар оновлено
-        public event Func<System.Threading.Tasks.Task>? OnCalendarUpdated;
+        public event Func<Task>? OnCalendarUpdated;
 
-        // Конструктор сторінки
         public TrainingPlannerPage(User user, SqliteDatabaseService db)
         {
             _user = user ?? throw new ArgumentNullException(nameof(user));
             _db = db ?? throw new ArgumentNullException(nameof(db));
-
             InitializeComponent();
         }
 
-        // Метод викликається при появі сторінки
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await LoadGoalAndStrategyAsync(); // Завантажуємо останню ціль і стратегію
+            await LoadGoalAndStrategyAsync();
+            LoadPrograms();
+            await LoadCalendarAsync();
         }
 
-        // Завантаження останньої цілі та стратегії користувача
-        private async System.Threading.Tasks.Task LoadGoalAndStrategyAsync()
+        private async Task LoadGoalAndStrategyAsync()
         {
-            _goal = await _db.GetLatestGoalAsync(_user.Id); // Остання ціль
+            _goal = await _db.GetLatestGoalAsync(_user.Id);
             if (_goal == null)
             {
                 await DisplayAlert("ℹ️", "У вас ще немає збережених цілей.", "OK");
                 return;
             }
 
-            _strategy = await _db.GetStrategyByIdAsync(_goal.StrategyId); // Стратегія для цілі
+            _strategy = await _db.GetStrategyByIdAsync(_goal.StrategyId);
 
             GoalLabel.Text = _goal?.Description ?? "Ціль не задана";
             StrategyLabel.Text = _strategy?.Name ?? "Невідомо";
 
-            GenerateCalendar(_goal.StartDate, _goal.EndDate); // Генеруємо календар для періоду цілі
+            if (!CalendarDays.Any())
+                GenerateEmptyCalendar(_goal.StartDate, _goal.EndDate);
         }
 
-        // Генерація календаря для поточного плану
-        private void GenerateCalendar(DateTime startDate, DateTime endDate)
+        private void LoadPrograms()
+        {
+            Programs.Clear();
+
+            Programs.Add(new WorkoutProgram
+            {
+                Name = "Сила та маса",
+                Description = "Набір м'язової маси",
+                DailyWorkouts = new List<string> { "Руки", "Ноги", "Відпочинок", "FullBody", "Кардіо", "Відновлення", "Руки" }
+            });
+
+            Programs.Add(new WorkoutProgram
+            {
+                Name = "Кардіо та витривалість",
+                Description = "Щоденні кардіо-тренування",
+                DailyWorkouts = new List<string> { "Кардіо", "Кардіо", "Відпочинок", "Кардіо", "Кардіо", "Відновлення", "Кардіо" }
+            });
+
+            Programs.Add(new WorkoutProgram
+            {
+                Name = "Схуднення",
+                Description = "Тренування для спалювання жиру та легкі силові вправи",
+                DailyWorkouts = new List<string> { "Кардіо", "FullBody", "Відпочинок", "Кардіо", "Руки", "Відновлення", "Ноги" }
+            });
+
+            ProgramCollection.ItemsSource = Programs;
+            ProgramCollection.SelectionChanged += ProgramCollection_SelectionChanged;
+        }
+
+        private void ProgramCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection.FirstOrDefault() is WorkoutProgram program)
+                GenerateCalendarFromProgram(program);
+        }
+
+        private void GenerateEmptyCalendar(DateTime startDate, DateTime endDate)
         {
             CalendarDays.Clear();
-            int totalDays = (endDate - startDate).Days + 1;
+            int totalDays = (int)(endDate - startDate).TotalDays + 1;
 
             for (int i = 0; i < totalDays; i++)
             {
                 var date = startDate.AddDays(i);
-                bool isTrainingDay = IsTrainingDay(date); // Перевірка, чи день тренувальний
-
-                // Додаємо день до календаря
                 CalendarDays.Add(new CalendarDay
                 {
                     Date = date,
-                    DateText = date.Day.ToString(), // Відображаємо число місяця
-                    BackgroundColor = isTrainingDay ? Colors.DarkRed : Colors.Gray, // Колір залежить від того, тренування чи ні
-                    WorkoutType = isTrainingDay ? "Руки" : "Відпочинок" // Тип тренування
+                    DateText = date.Day.ToString(),
+                    WorkoutType = "Відпочинок",
+                    BackgroundColor = Colors.Gray,
+                    TextColor = Colors.Black,
+                    IsExtraWorkout = false
                 });
             }
 
-            CalendarCollection.ItemsSource = CalendarDays; // Прив'язка до CollectionView на сторінці
+            CalendarCollection.ItemsSource = CalendarDays;
         }
 
-        // Логіка визначення тренувального дня залежно від стратегії
-        private bool IsTrainingDay(DateTime date)
+        private void GenerateCalendarFromProgram(WorkoutProgram program)
         {
-            if (_strategy == null || _goal == null)
-                return false;
+            if (_goal == null || _strategy == null) return;
 
-            // Повільно – через кожні 5 днів, Помірно – через 3, Агресивно – щодня
-            return _strategy.Name switch
+            CalendarDays.Clear();
+            int totalDays = (int)(_goal.EndDate - _goal.StartDate).TotalDays + 1;
+
+            var fullWorkouts = new List<string>();
+            for (int i = 0; i < totalDays; i++)
+                fullWorkouts.Add(program.DailyWorkouts[i % program.DailyWorkouts.Count]);
+
+            for (int i = 0; i < totalDays; i++)
             {
-                "Повільно" => (date - _goal.StartDate).Days % 5 == 0,
-                "Помірно" => (date - _goal.StartDate).Days % 3 == 0,
-                "Агресивно" => (date - _goal.StartDate).Days % 2 == 0,
-            };
+                var date = _goal.StartDate.AddDays(i);
+                bool isTrainingDay = _strategy.Name switch
+                {
+                    "Повільно" => i % 5 == 0,
+                    "Помірно" => i % 3 == 0,
+                    "Агресивно" => i % 2 == 0,
+                    _ => false
+                };
+
+                string workoutType = isTrainingDay ? fullWorkouts[i] : "Відпочинок";
+
+                CalendarDays.Add(new CalendarDay
+                {
+                    Date = date,
+                    DateText = date.Day.ToString(),
+                    WorkoutType = workoutType,
+                    BackgroundColor = isTrainingDay ? Colors.Red : Colors.Gray,
+                    TextColor = isTrainingDay ? Colors.White : Colors.Black,
+                    IsExtraWorkout = false
+                });
+            }
+
+            CalendarCollection.ItemsSource = CalendarDays;
         }
 
-        // Збереження плану тренувань у базу даних
+        public void AddExtraWorkout(DateTime date, string workoutType)
+        {
+            var day = CalendarDays.FirstOrDefault(d => d.Date.Date == date.Date);
+            if (day != null)
+            {
+                day.WorkoutType = workoutType;
+                day.IsExtraWorkout = true;
+                day.BackgroundColor = Colors.Green;
+                day.TextColor = Colors.White;
+            }
+        }
+
+        private async Task LoadCalendarAsync()
+        {
+            if (_goal == null || _strategy == null)
+                return;
+
+            var savedPlans = await _db.Database.Table<TrainingPlan>()
+                                              .Where(t => t.UserId == _user.Id &&
+                                                          t.GoalId == _goal.Id &&
+                                                          t.StrategyId == _strategy.Id)
+                                              .ToListAsync();
+
+            if (savedPlans.Any())
+            {
+                CalendarDays.Clear();
+                foreach (var day in savedPlans)
+                {
+                    CalendarDays.Add(new CalendarDay
+                    {
+                        Date = day.Date,
+                        DateText = day.Date.Day.ToString(),
+                        WorkoutType = day.WorkoutType,
+                        BackgroundColor = day.WorkoutType == "Відпочинок" ? Colors.Gray :
+                                          day.IsExtraWorkout ? Colors.Green : Colors.Red,
+                        TextColor = Colors.White,
+                        IsExtraWorkout = day.IsExtraWorkout
+                    });
+                }
+                CalendarCollection.ItemsSource = CalendarDays;
+            }
+            else
+            {
+                GenerateEmptyCalendar(_goal.StartDate, _goal.EndDate);
+            }
+        }
+
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             if (_goal == null || _strategy == null)
@@ -103,16 +204,15 @@ namespace NutritionTrackerMAUI.Views
                 return;
             }
 
-            // Очищаємо попередні тренування для цього користувача, цілі та стратегії
             var existingPlans = await _db.Database.Table<TrainingPlan>()
                                                  .Where(t => t.UserId == _user.Id &&
                                                              t.GoalId == _goal.Id &&
                                                              t.StrategyId == _strategy.Id)
                                                  .ToListAsync();
+
             foreach (var p in existingPlans)
                 await _db.Database.DeleteAsync(p);
 
-            // Зберігаємо нові
             foreach (var day in CalendarDays)
             {
                 var plan = new TrainingPlan
@@ -120,27 +220,34 @@ namespace NutritionTrackerMAUI.Views
                     UserId = _user.Id,
                     GoalId = _goal.Id,
                     StrategyId = _strategy.Id,
-                    DayOfWeek = day.Date.DayOfWeek.ToString(),
-                    WorkoutType = day.WorkoutType
+                    Date = day.Date,
+                    WorkoutType = day.WorkoutType,
+                    IsExtraWorkout = day.IsExtraWorkout
                 };
                 await _db.Database.InsertAsync(plan);
             }
 
             await DisplayAlert("✅ Успіх", "План тренувань збережено!", "OK");
 
-            // Викликаємо подію з передачею актуальних тренувань
             if (OnCalendarUpdated != null)
-                await OnCalendarUpdated.Invoke(); // Головна сторінка сама підтягує з бази
+                await OnCalendarUpdated.Invoke();
         }
 
-
-        // Модель для відображення дня календаря
         public class CalendarDay
         {
-            public DateTime Date { get; set; } // Дата
-            public string DateText { get; set; } = string.Empty; // Текст дня (число)
-            public Color BackgroundColor { get; set; } = Colors.Gray; // Колір фону
-            public string WorkoutType { get; set; } = "Відпочинок"; // Тип тренування
+            public DateTime Date { get; set; }
+            public string DateText { get; set; } = string.Empty;
+            public Color BackgroundColor { get; set; } = Colors.Gray;
+            public string WorkoutType { get; set; } = "Відпочинок";
+            public Color TextColor { get; set; } = Colors.Black;
+            public bool IsExtraWorkout { get; set; } = false;
+        }
+
+        public class WorkoutProgram
+        {
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public List<string> DailyWorkouts { get; set; } = new();
         }
     }
 }

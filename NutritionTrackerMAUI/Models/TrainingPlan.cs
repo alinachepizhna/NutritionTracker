@@ -12,7 +12,7 @@ namespace NutritionTrackerMAUI.Models
         public int GoalId { get; set; }
         public int StrategyId { get; set; }
         public DateTime Date { get; set; } // точна дата тренування
-
+        public bool IsExtraWorkout { get; set; } = false;
         public string DayOfWeek { get; set; } = string.Empty; // Наприклад: "Понеділок"
         public string WorkoutType { get; set; } = string.Empty; // "Руки", "Ноги", "FullBody", "Відновлення"
         public string Exercises { get; set; } = string.Empty;  // Список вправ у форматі CSV

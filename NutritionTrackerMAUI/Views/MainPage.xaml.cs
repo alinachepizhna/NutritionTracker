@@ -15,7 +15,7 @@ namespace NutritionTrackerMAUI.Views
         private readonly User _user;
 
         // Колекція для міні-календаря
-        public ObservableCollection<CalendarDay> MiniCalendarDays { get; set; } = new();
+        public ObservableCollection<TrainingPlannerPage.CalendarDay> MiniCalendarDays { get; set; } = new();
 
         public MainPage(User user, SqliteDatabaseService db)
         {
@@ -56,7 +56,7 @@ namespace NutritionTrackerMAUI.Views
                 for (int i = 0; i < 7; i++)
                 {
                     var date = DateTime.Today.AddDays(i);
-                    MiniCalendarDays.Add(CreateCalendarDay(date, "Відновлення", Colors.Gray));
+                    MiniCalendarDays.Add(CreateCalendarDay(date, "Відпочинок", Colors.Gray));
                 }
                 return;
             }
@@ -69,8 +69,8 @@ namespace NutritionTrackerMAUI.Views
             // Генеруємо календар лише в межах періоду цілі
             for (var date = lastGoal.StartDate; date <= lastGoal.EndDate; date = date.AddDays(1))
             {
-                var workout = trainings.FirstOrDefault(t => t.DayOfWeek == date.DayOfWeek.ToString());
-                var workoutType = workout?.WorkoutType ?? "Відновлення";
+                var workout = trainings.FirstOrDefault(t => t.Date.Date == date.Date);
+                var workoutType = workout?.WorkoutType ?? "Відпочинок";
                 var color = !string.IsNullOrEmpty(workout?.WorkoutType)
                             ? WorkoutColorService.GetColor(workout.WorkoutType)
                             : Colors.Gray;
@@ -80,9 +80,9 @@ namespace NutritionTrackerMAUI.Views
         }
 
         // --- Універсальний метод для створення дня календаря ---
-        private CalendarDay CreateCalendarDay(DateTime date, string workoutType, Color color)
+        private TrainingPlannerPage.CalendarDay CreateCalendarDay(DateTime date, string workoutType, Color color)
         {
-            return new CalendarDay
+            return new TrainingPlannerPage.CalendarDay
             {
                 Date = date,
                 DateText = date.Day.ToString(),
