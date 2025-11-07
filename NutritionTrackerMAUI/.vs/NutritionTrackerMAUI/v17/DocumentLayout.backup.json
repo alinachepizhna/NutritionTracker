@@ -243,7 +243,7 @@
               "RelativeDocumentMoniker": "Views\\MainPage.xaml.cs",
               "ToolTip": "D:\\\u043A\u0443\u0440\u0441\u0430\u0447\\XamarinProjects\\NutritionTracker\\NutritionTrackerMAUI\\Views\\MainPage.xaml.cs",
               "RelativeToolTip": "Views\\MainPage.xaml.cs",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAAAGwAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAG8AAAAAAAAAAAAAAHMAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-30T22:12:17.73Z",
               "IsPinned": true,
@@ -286,8 +286,7 @@
               "ViewState": "AgIAAFAAAAAAAAAAAAAuwFkAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T21:30:35.258Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
