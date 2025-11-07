@@ -23,6 +23,8 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<AnthropometricData>().Wait();
             _database.CreateTableAsync<Strategy>().Wait(); // Таблиця стратегій
             _database.CreateTableAsync<Goal>().Wait();     // Таблиця цілей
+            _database.CreateTableAsync<TrainingPlan>().Wait();
+
         }
 
         // ===============================
@@ -122,6 +124,13 @@ namespace NutritionTrackerMAUI.Services
                 .OrderByDescending(g => g.Id)
                 .FirstOrDefaultAsync();
         }
+        public Task<List<TrainingPlan>> GetTrainingsByUserAsync(int userId)
+        {
+            return _database.Table<TrainingPlan>()
+                            .Where(t => t.UserId == userId)
+                            .ToListAsync();
+        }
+
 
     }
 

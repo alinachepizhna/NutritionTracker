@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:NutritionTrackerMAUI.Views"
             x:Class="NutritionTrackerMAUI.Views.MainPage"
             BarBackgroundColor="#D32F2F"
             BarTextColor="White"
             Title="Головна">
 
-    <!-- 🏠 Вкладка Головна -->
+    <!-- Вкладка "Головна" -->
     <ContentPage Title="Головна" IconImageSource="home.png" BackgroundColor="#F0F0F5">
         <ScrollView>
-            <Grid Padding="20">
-                <Border Stroke="#D32F2F" StrokeThickness="2" Padding="25">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="30"/>
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="20">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Поточна ціль -->
+                <Frame BorderColor="#D32F2F" CornerRadius="30" Padding="20">
+                    <VerticalStackLayout Spacing="15">
                         <Label Text="Ваша поточна ціль"
                                FontSize="26"
                                FontAttributes="Bold"
                                TextColor="#D32F2F"
                                HorizontalOptions="Center"/>
-
-                        <BoxView HeightRequest="3" Margin="0,0,0,10">
+                        <BoxView HeightRequest="3">
                             <BoxView.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                     <GradientStop Color="#D32F2F" Offset="0.0"/>
@@ -29,18 +28,54 @@
                                 </LinearGradientBrush>
                             </BoxView.Background>
                         </BoxView>
-
                         <Label x:Name="CurrentGoalLabel" Text="Ціль: --" FontSize="18"/>
                         <Label x:Name="CurrentStrategyLabel" Text="Стратегія: --" FontSize="18"/>
-
                         <Button Text="Нова ціль"
                                 BackgroundColor="#D32F2F"
                                 TextColor="White"
                                 CornerRadius="20"
                                 Clicked="OnNewGoalClicked"/>
                     </VerticalStackLayout>
-                </Border>
-            </Grid>
+                </Frame>
+
+                <!-- Календар тренувань -->
+                <Label Text="Календар тренувань" FontAttributes="Bold" FontSize="20" TextColor="#D32F2F"/>
+                <CollectionView x:Name="MiniCalendarCollection" ItemsLayout="VerticalGrid, 7" HeightRequest="180">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame CornerRadius="12" Padding="5" HasShadow="True" Margin="2">
+                                <Frame.Background>
+                                    <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                </Frame.Background>
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+
+
+                                    <Label Text="{Binding DateText}"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           TextColor="White">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
+                                                <Setter Property="TextColor" Value="Yellow"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+
+                                    <BoxView WidthRequest="12" HeightRequest="12" CornerRadius="6"
+                                             Color="{Binding BackgroundColor}"
+                                             HorizontalOptions="Center"/>
+                                    <Label Text="{Binding WorkoutType}" FontSize="10" TextColor="White" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label x:Name="TodayWorkoutLabel" FontSize="16" TextColor="Black" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
         </ScrollView>
     </ContentPage>
 
