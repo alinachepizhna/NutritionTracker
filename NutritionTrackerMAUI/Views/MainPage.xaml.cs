@@ -46,28 +46,27 @@ namespace NutritionTrackerMAUI.Views
         // --- Оновлення міні-календаря ---
         private async Task RefreshMiniCalendarAsync()
         {
-            var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
-
             MiniCalendarDays.Clear();
 
-            if (lastGoal == null)
-            {
-                // Якщо цілі немає, показуємо тиждень «Відновлення»
-                for (int i = 0; i < 7; i++)
-                {
-                    var date = DateTime.Today.AddDays(i);
-                    MiniCalendarDays.Add(CreateCalendarDay(date, "Відпочинок", Colors.Gray));
-                }
-                return;
-            }
+            var today = DateTime.Today;
 
-            // Завантажуємо всі тренування для останньої цілі
-            var trainings = await _db.Database.Table<TrainingPlan>()
-                                             .Where(t => t.UserId == _user.Id && t.GoalId == lastGoal.Id)
-                                             .ToListAsync();
+            // Знаходимо початок і кінець поточного тижня (понеділок – неділя)
+            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var weekStart = today.AddDays(-diff);
+            var weekEnd = weekStart.AddDays(6);
 
-            // Генеруємо календар лише в межах періоду цілі
-            for (var date = lastGoal.StartDate; date <= lastGoal.EndDate; date = date.AddDays(1))
+            // Отримуємо останню ціль користувача
+            var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
+
+            // Завантажуємо тренування для останньої цілі
+            var trainings = lastGoal != null
+                ? await _db.Database.Table<TrainingPlan>()
+                                    .Where(t => t.UserId == _user.Id && t.GoalId == lastGoal.Id)
+                                    .ToListAsync()
+                : new List<TrainingPlan>();
+
+            // Генеруємо дні поточного тижня
+            for (var date = weekStart; date <= weekEnd; date = date.AddDays(1))
             {
                 var workout = trainings.FirstOrDefault(t => t.Date.Date == date.Date);
                 var workoutType = workout?.WorkoutType ?? "Відпочинок";
@@ -78,6 +77,7 @@ namespace NutritionTrackerMAUI.Views
                 MiniCalendarDays.Add(CreateCalendarDay(date, workoutType, color));
             }
         }
+
 
         // --- Універсальний метод для створення дня календаря ---
         private TrainingPlannerPage.CalendarDay CreateCalendarDay(DateTime date, string workoutType, Color color)

@@ -60,6 +60,7 @@
                                                 <Setter Property="TextColor" Value="Yellow"/>
                                                 <Setter Property="FontSize" Value="20"/>
                                             </DataTrigger>
+
                                         </Label.Triggers>
                                     </Label>
 

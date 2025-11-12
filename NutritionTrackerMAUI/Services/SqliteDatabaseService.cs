@@ -24,6 +24,7 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<Strategy>().Wait(); // Таблиця стратегій
             _database.CreateTableAsync<Goal>().Wait();     // Таблиця цілей
             _database.CreateTableAsync<TrainingPlan>().Wait();
+            _database.CreateTableAsync<UserWorkoutProgram>().Wait();
 
         }
 
@@ -130,8 +131,6 @@ namespace NutritionTrackerMAUI.Services
                             .Where(t => t.UserId == userId)
                             .ToListAsync();
         }
-
-
+    
+        }
     }
-
-}

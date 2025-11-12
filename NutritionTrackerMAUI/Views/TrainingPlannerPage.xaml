@@ -1,6 +1,7 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NutritionTrackerMAUI.Views.TrainingPlannerPage"
+             x:Name="TrainingPlannerRoot"
              Title="Планування тренувань"
              BackgroundColor="#1E1E1E">
 
@@ -23,7 +24,7 @@
             <Label Text="🧩 Стратегія:" FontAttributes="Bold" FontSize="20" TextColor="White"/>
             <Label x:Name="StrategyLabel" FontSize="16" TextColor="#FF5252"/>
 
-            <!-- Готові програми -->
+            <!-- Фіксовані програми -->
             <Label Text="📚 Готові програми" FontAttributes="Bold" FontSize="20" TextColor="White"/>
             <CollectionView x:Name="ProgramCollection"
                             SelectionMode="Single"
@@ -44,30 +45,84 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Календар тренувань -->
-            <Label Text="📆 Календар тренувань" FontAttributes="Bold" FontSize="20" TextColor="White"/>
-            <CollectionView x:Name="CalendarCollection"
-                            ItemsLayout="VerticalGrid, 7"
-                            SelectionMode="None">
+            <!-- Користувацькі програми -->
+            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                <Label Text="📝 Ваші програми" FontAttributes="Bold" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                <Button Text="➕ Додати" Clicked="OnAddUserProgramClicked" BackgroundColor="#FF5252" TextColor="White" CornerRadius="15" HeightRequest="35"/>
+            </HorizontalStackLayout>
+            <CollectionView x:Name="UserProgramCollection"
+                            SelectionMode="Single"
+                            HeightRequest="150"
+                            Margin="0,5">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal"/>
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border BackgroundColor="{Binding BackgroundColor}" StrokeShape="RoundRectangle 8" Padding="10" Margin="3">
+                        <Border Stroke="#444444" StrokeShape="RoundRectangle 12" BackgroundColor="#2A2A2A" Padding="15" Margin="5">
                             <VerticalStackLayout>
-                                <Label Text="{Binding DateText}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
-                                       TextColor="{Binding TextColor}"
-                                       FontAttributes="Bold"/>
-                                <Picker Title="Тип тренування"
-                                        ItemsSource="{StaticResource WorkoutTypes}"
-                                        SelectedItem="{Binding WorkoutType}"
-                                        TextColor="White"
-                                        BackgroundColor="#2A2A2A"/>
+                                <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="16"/>
+                                <Label Text="{Binding Description}" TextColor="#CCCCCC" FontSize="14"/>
+                                <Button Text="🗑 Видалити" Clicked="OnDeleteUserProgramClicked" BackgroundColor="#FF5252" TextColor="White" CornerRadius="10" HeightRequest="30"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+            <!-- Календар тренувань -->
+            <Label Text="📆 Календар тренувань" FontAttributes="Bold" FontSize="20" TextColor="White"/>
+            <CollectionView x:Name="CalendarCollection"
+                ItemsLayout="VerticalGrid, 7"
+                SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="{Binding BackgroundColor}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="10"
+                    Margin="3">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding DateText}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="{Binding TextColor}"
+                           FontAttributes="Bold"/>
+                                <Label Text="{Binding WorkoutType}" 
+                           FontSize="10" 
+                           TextColor="White" 
+                           HorizontalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                         Binding="{Binding IsCustomProgramMode}"
+                                         Value="False">
+                                            <Setter Property="TextColor" Value="White"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Picker Title="Виберіть тренування"
+                            ItemsSource="{StaticResource WorkoutTypes}"
+                            SelectedItem="{Binding WorkoutType}"
+                            TextColor="White"
+                            BackgroundColor="#2A2A2A"
+                            SelectedIndexChanged="OnWorkoutTypeChanged">
+                                    <Picker.Triggers>
+                                        <DataTrigger TargetType="Picker"
+                                         Binding="{Binding IsCustomProgramMode}"
+                                         Value="False">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Picker.Triggers>
+                                </Picker>
+                            </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnCalendarDayTapped"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
 
             <!-- Зберегти -->
             <Button Text="💾 Зберегти план"
