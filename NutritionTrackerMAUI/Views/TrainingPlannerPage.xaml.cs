@@ -69,7 +69,7 @@ namespace NutritionTrackerMAUI.Views
                 Description = "Набір м'язової маси з чергуванням груп",
                 DailyWorkouts = new List<string>
         {
-            "Руки", "Ноги", "FullBody", "Відпочинок", "Руки", "Кардіо", "Відпочинок"
+            "Руки", "Ноги", "FullBody", "Відпочинок", "Руки", "Кардіо", "Ноги"
         }
             });
 
@@ -80,7 +80,7 @@ namespace NutritionTrackerMAUI.Views
                 Description = "Кардіо та легкі силові вправи",
                 DailyWorkouts = new List<string>
         {
-            "Кардіо", "FullBody", "Відпочинок", "Кардіо", "Руки", "Відновлення", "Відпочинок"
+            "Кардіо", "FullBody", "Відновлення", "Кардіо", "FullBody", "Відновлення", "Кардіо"
         }
             });
 
@@ -91,7 +91,7 @@ namespace NutritionTrackerMAUI.Views
                 Description = "Тренування для спалювання жиру та силові вправи",
                 DailyWorkouts = new List<string>
         {
-            "FullBody", "Кардіо", "Відпочинок", "Ноги", "Руки", "Відновлення", "Відпочинок"
+            "FullBody", "Кардіо", "Відновлення", "Ноги", "Руки", "Відновлення", "FullBody"
         }
             });
 
@@ -121,52 +121,50 @@ namespace NutritionTrackerMAUI.Views
             UserProgramCollection.SelectionChanged += UserProgramCollection_SelectionChanged;
         }
 
-        // --- Готовые программы ---
+
         private void ProgramCollection_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is WorkoutProgram program)
             {
-                _isCustomProgramMode = false; // только просмотр
+                _isCustomProgramMode = false; 
                 GenerateCalendarFromProgram(program);
             }
         }
 
-        // --- Пользовательские программы ---
+
         private void UserProgramCollection_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is WorkoutProgram program)
             {
-                _isCustomProgramMode = true; // можно редактировать календарь
+                _isCustomProgramMode = true;
                 GenerateCalendarFromProgram(program);
             }
         }
 
-        // --- Нажатие на день календаря ---
+
         private void OnCalendarDayTapped(object sender, EventArgs e)
         {
-            if (!_isCustomProgramMode) return; // только для пользовательских программ
+            if (!_isCustomProgramMode) return;
 
             if (sender is Border border && border.BindingContext is CalendarDay day)
             {
-                // Переключаем день между "Відпочинок" и тренировкой
-                if (day.IsExtraWorkout)
+                // Перемикаємо видимість пікеру або стан тренування
+                day.IsExtraWorkout = !day.IsExtraWorkout;
+
+                if (!day.IsExtraWorkout)
                 {
-                    day.IsExtraWorkout = false;
                     day.WorkoutType = "Відпочинок";
                     day.BackgroundColor = Colors.Gray;
                 }
                 else
                 {
-                    day.IsExtraWorkout = true;
-                    day.WorkoutType = "Руки"; // стандартная тренировка
+                    // Дозволяємо вибір через Picker
                     day.BackgroundColor = Colors.Green;
+                    // Тепер WorkoutType змінюється через OnWorkoutTypeChanged
                 }
-
-                // Обновляем CollectionView
-                CalendarCollection.ItemsSource = null;
-                CalendarCollection.ItemsSource = CalendarDays;
             }
         }
+
 
 
         private void OnWorkoutTypeChanged(object sender, EventArgs e)
@@ -255,18 +253,18 @@ namespace NutritionTrackerMAUI.Views
                 string workoutType = program.DailyWorkouts[i % program.DailyWorkouts.Count];
                 bool isTrainingDay = false;
 
-                if (!_isCustomProgramMode) // готовые программы
+                if (!_isCustomProgramMode) 
                 {
                     switch (_strategy.Name)
                     {
-                        case "Агресивно": isTrainingDay = i % 7 < 5; break; // 5 тренировочных дней
-                        case "Помірно": isTrainingDay = i % 7 < 4; break;    // 4
-                        case "Повільно": isTrainingDay = i % 7 < 2; break;   // 2
+                        case "Агресивно": isTrainingDay = i % 7 < 5; break; 
+                        case "Помірно": isTrainingDay = i % 7 < 4; break;    
+                        case "Повільно": isTrainingDay = i % 7 < 2; break;   
                     }
                 }
                 else
                 {
-                    isTrainingDay = workoutType != "Відпочинок"; // пользовательская программа
+                    isTrainingDay = workoutType != "Відпочинок"; 
                 }
 
                 Color bgColor = isTrainingDay
@@ -327,7 +325,7 @@ namespace NutritionTrackerMAUI.Views
         {
             if (_goal == null) return;
 
-            // Сохраняем только пользовательские программы
+
             var existingPlans = await _db.Database.Table<TrainingPlan>()
                                                  .Where(t => t.UserId == _user.Id &&
                                                              t.GoalId == _goal.Id)
@@ -338,7 +336,7 @@ namespace NutritionTrackerMAUI.Views
 
             foreach (var day in CalendarDays)
             {
-                if (!_isCustomProgramMode) continue; // сохраняем только пользовательские
+                if (!_isCustomProgramMode) continue; 
 
                 var plan = new TrainingPlan
                 {
