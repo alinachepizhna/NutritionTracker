@@ -113,13 +113,16 @@ namespace NutritionTrackerMAUI.Views
                 {
                     Name = prog.Name,
                     Description = prog.Description,
-                    DailyWorkouts = prog.DailyWorkouts.Split(',').ToList()
+                    DailyWorkouts = prog.DailyWorkouts.Split(',').ToList(),
+                    IsLocked = prog.IsLocked
                 });
             }
 
             UserProgramCollection.ItemsSource = UserPrograms;
             UserProgramCollection.SelectionChanged += UserProgramCollection_SelectionChanged;
         }
+
+
 
 
         private void ProgramCollection_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -132,14 +135,53 @@ namespace NutritionTrackerMAUI.Views
         }
 
 
-        private void UserProgramCollection_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        private WorkoutProgram? _currentUserProgram;
+
+        private async void UserProgramCollection_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.FirstOrDefault() is WorkoutProgram program)
             {
-                _isCustomProgramMode = true;
-                GenerateCalendarFromProgram(program);
+                _currentUserProgram = program;
+                _isCustomProgramMode = !_currentUserProgram.IsLocked;
+
+                CalendarDays.Clear();
+
+                var savedPlans = await _db.Database.Table<TrainingPlan>()
+                                           .Where(t => t.UserId == _user.Id &&
+                                                       t.GoalId == _goal.Id &&
+                                                       t.ProgramName == _currentUserProgram.Name)
+                                           .OrderBy(t => t.Date)
+                                           .ToListAsync();
+
+                if (savedPlans.Any())
+                {
+                    foreach (var day in savedPlans)
+                    {
+                        CalendarDays.Add(new CalendarDay
+                        {
+                            Date = day.Date,
+                            DateText = day.Date.Day.ToString(),
+                            WorkoutType = day.WorkoutType,
+                            BackgroundColor = day.IsExtraWorkout ? Colors.Green : Colors.Gray,
+                            TextColor = Colors.White,
+                            IsExtraWorkout = day.IsExtraWorkout,
+                            IsCustomProgramMode = !_currentUserProgram.IsLocked
+                        });
+                    }
+                }
+                else
+                {
+                    GenerateCalendarFromProgram(program);
+                }
+
+                UserProgramCollection.SelectedItem = null;
             }
         }
+
+
+
+
+
 
 
         private void OnCalendarDayTapped(object sender, EventArgs e)
@@ -321,27 +363,27 @@ namespace NutritionTrackerMAUI.Views
             }
         }
 
+
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            if (_goal == null) return;
-
+            if (_goal == null || _currentUserProgram == null) return;
 
             var existingPlans = await _db.Database.Table<TrainingPlan>()
                                                  .Where(t => t.UserId == _user.Id &&
-                                                             t.GoalId == _goal.Id)
+                                                             t.GoalId == _goal.Id &&
+                                                             t.ProgramName == _currentUserProgram.Name)
                                                  .ToListAsync();
-
             foreach (var p in existingPlans)
                 await _db.Database.DeleteAsync(p);
 
+
             foreach (var day in CalendarDays)
             {
-                if (!_isCustomProgramMode) continue; 
-
                 var plan = new TrainingPlan
                 {
                     UserId = _user.Id,
                     GoalId = _goal.Id,
+                    ProgramName = _currentUserProgram.Name,
                     Date = day.Date,
                     WorkoutType = day.WorkoutType,
                     IsExtraWorkout = day.IsExtraWorkout
@@ -349,11 +391,32 @@ namespace NutritionTrackerMAUI.Views
                 await _db.Database.InsertAsync(plan);
             }
 
+            if (!_currentUserProgram.IsLocked)
+            {
+                var dbProg = await _db.Database.Table<UserWorkoutProgram>()
+                                               .Where(p => p.UserId == _user.Id && p.Name == _currentUserProgram.Name)
+                                               .FirstOrDefaultAsync();
+                if (dbProg != null)
+                {
+                    dbProg.IsLocked = true;
+                    await _db.Database.UpdateAsync(dbProg);
+
+                    var localProg = UserPrograms.FirstOrDefault(p => p.Name == dbProg.Name);
+                    if (localProg != null)
+                        localProg.IsLocked = true;
+                }
+            }
+
+            _isCustomProgramMode = false;
+
             await DisplayAlert("✅ Успіх", "План тренувань збережено!", "OK");
 
             if (OnCalendarUpdated != null)
                 await OnCalendarUpdated.Invoke();
         }
+
+
+
 
         public class CalendarDay
         {
@@ -371,6 +434,8 @@ namespace NutritionTrackerMAUI.Views
             public string Name { get; set; } = string.Empty;
             public string Description { get; set; } = string.Empty;
             public List<string> DailyWorkouts { get; set; } = new();
+            public bool IsLocked { get; set; } = false;
+
         }
     }
 }

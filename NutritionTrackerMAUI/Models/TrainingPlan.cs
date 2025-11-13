@@ -7,7 +7,7 @@ namespace NutritionTrackerMAUI.Models
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-
+        public string ProgramName { get; set; } = string.Empty;
         public int UserId { get; set; }
         public int GoalId { get; set; }
         public int StrategyId { get; set; }
