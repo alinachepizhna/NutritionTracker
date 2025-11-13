@@ -29,15 +29,16 @@ namespace NutritionTrackerMAUI.Views
             LoadLastGoal();
 
             // Додаємо вкладку планувальника тренувань
-            var plannerPage = new TrainingPlannerPage(_user, _db)
+            _plannerPage = new TrainingPlannerPage(_user, _db)
             {
                 Title = "Планування",
                 IconImageSource = "dumbbell.png"
             };
-            Children.Add(plannerPage);
 
-            // Підписка на подію оновлення календаря після збереження тренувань
-            plannerPage.OnCalendarUpdated += async () => await RefreshMiniCalendarAsync();
+            Children.Add(_plannerPage);
+
+            // При сохранении или выборе новой программы
+            _plannerPage.OnCalendarUpdated += async () => await RefreshMiniCalendarAsync();
 
             // Ініціалізація міні-календаря
             _ = RefreshMiniCalendarAsync();
@@ -48,24 +49,29 @@ namespace NutritionTrackerMAUI.Views
         {
             MiniCalendarDays.Clear();
 
+            if (_plannerPage == null) return;
+
             var today = DateTime.Today;
 
-            // Знаходимо початок і кінець поточного тижня (понеділок – неділя)
             int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
             var weekStart = today.AddDays(-diff);
             var weekEnd = weekStart.AddDays(6);
 
-            // Отримуємо останню ціль користувача
             var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
+            if (lastGoal == null) return;
 
-            // Завантажуємо тренування для останньої цілі
-            var trainings = lastGoal != null
+            // Фильтруем тренировки по текущей программе
+            var trainings = _plannerPage.CurrentProgramName != null
                 ? await _db.Database.Table<TrainingPlan>()
-                                    .Where(t => t.UserId == _user.Id && t.GoalId == lastGoal.Id)
+                                    .Where(t => t.UserId == _user.Id &&
+                                                t.GoalId == lastGoal.Id &&
+                                                t.ProgramName == _plannerPage.CurrentProgramName)
                                     .ToListAsync()
-                : new List<TrainingPlan>();
+                : await _db.Database.Table<TrainingPlan>()
+                                    .Where(t => t.UserId == _user.Id &&
+                                                t.GoalId == lastGoal.Id)
+                                    .ToListAsync();
 
-            // Генеруємо дні поточного тижня
             for (var date = weekStart; date <= weekEnd; date = date.AddDays(1))
             {
                 var workout = trainings.FirstOrDefault(t => t.Date.Date == date.Date);
@@ -77,6 +83,7 @@ namespace NutritionTrackerMAUI.Views
                 MiniCalendarDays.Add(CreateCalendarDay(date, workoutType, color));
             }
         }
+
 
 
         // --- Універсальний метод для створення дня календаря ---
@@ -114,5 +121,7 @@ namespace NutritionTrackerMAUI.Views
             if (Navigation != null)
                 await Navigation.PushAsync(new GoalPage(_user, _db));
         }
+        private TrainingPlannerPage _plannerPage;
+
     }
 }

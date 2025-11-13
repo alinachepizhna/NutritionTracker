@@ -204,7 +204,10 @@ namespace NutritionTrackerMAUI.Views
             if (sender is Picker picker && picker.BindingContext is CalendarDay day)
             {
                 day.WorkoutType = picker.SelectedItem?.ToString() ?? "Відпочинок";
-                day.BackgroundColor = day.WorkoutType == "Відпочинок" ? Colors.Gray : Colors.Green;
+                day.BackgroundColor = day.WorkoutType == "Відпочинок"
+    ? Colors.Gray
+    : WorkoutColorService.GetColor(day.WorkoutType);
+
                 day.IsExtraWorkout = day.WorkoutType != "Відпочинок";
             }
         }
@@ -291,8 +294,9 @@ namespace NutritionTrackerMAUI.Views
                 } : workoutType != "Відпочинок";
 
                 Color bgColor = isTrainingDay
-                                ? (_isCustomProgramMode ? Colors.Green : Colors.Red)
-                                : Colors.Gray;
+                 ? WorkoutColorService.GetColor(workoutType)
+                 : Colors.Gray;
+
 
                 CalendarDays.Add(new CalendarDay
                 {
@@ -358,6 +362,7 @@ namespace NutritionTrackerMAUI.Views
             if (OnCalendarUpdated != null)
                 await OnCalendarUpdated.Invoke();
         }
+        public string? CurrentProgramName => _currentUserProgram?.Name;
 
         public class CalendarDay
         {
