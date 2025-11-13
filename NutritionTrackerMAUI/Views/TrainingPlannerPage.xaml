@@ -39,10 +39,17 @@
                             <VerticalStackLayout>
                                 <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="16"/>
                                 <Label Text="{Binding Description}" TextColor="#CCCCCC" FontSize="14"/>
+                                <Button Text="✅ Обрати" 
+                        BackgroundColor="#4CAF50" 
+                        TextColor="White" 
+                        CornerRadius="10"
+                        Clicked="OnSelectProgramClicked"
+                        BindingContext="{Binding}" />
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+
             </CollectionView>
 
             <!-- Користувацькі програми -->
@@ -63,7 +70,10 @@
                             <VerticalStackLayout>
                                 <Label Text="{Binding Name}" TextColor="White" FontAttributes="Bold" FontSize="16"/>
                                 <Label Text="{Binding Description}" TextColor="#CCCCCC" FontSize="14"/>
-                                <Button Text="🗑 Видалити" Clicked="OnDeleteUserProgramClicked" BackgroundColor="#FF5252" TextColor="White" CornerRadius="10" HeightRequest="30"/>
+                                <HorizontalStackLayout Spacing="5">
+                                    <Button Text="🗑 Видалити" Clicked="OnDeleteUserProgramClicked" BackgroundColor="#FF5252" TextColor="White" CornerRadius="10" HeightRequest="30"/>
+                                    <Button Text="✅ Обрати" Clicked="OnSelectUserProgramClicked" BackgroundColor="#4CAF50" TextColor="White" CornerRadius="10" HeightRequest="30"/>
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>

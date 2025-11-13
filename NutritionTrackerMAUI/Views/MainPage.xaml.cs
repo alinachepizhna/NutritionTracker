@@ -37,12 +37,44 @@ namespace NutritionTrackerMAUI.Views
 
             Children.Add(_plannerPage);
 
-            // При сохранении или выборе новой программы
-            _plannerPage.OnCalendarUpdated += async () => await RefreshMiniCalendarAsync();
+            _plannerPage.OnCalendarUpdatedWithDays += async (days) =>
+            {
+                MiniCalendarDays.Clear();
 
-            // Ініціалізація міні-календаря
+                var today = DateTime.Today;
+                int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+                var weekStart = today.AddDays(-diff);
+                var weekEnd = weekStart.AddDays(6);
+
+                foreach (var date in Enumerable.Range(0, 7).Select(i => weekStart.AddDays(i)))
+                {
+                    var day = days.FirstOrDefault(d => d.Date.Date == date.Date);
+                    if (day != null)
+                    {
+                        MiniCalendarDays.Add(new TrainingPlannerPage.CalendarDay
+                        {
+                            Date = day.Date,
+                            DateText = day.Date.Day.ToString(),
+                            WorkoutType = day.WorkoutType,
+                            BackgroundColor = day.BackgroundColor,
+                        });
+                    }
+                    else
+                    {
+                        MiniCalendarDays.Add(new TrainingPlannerPage.CalendarDay
+                        {
+                            Date = date,
+                            DateText = date.Day.ToString(),
+                            WorkoutType = "Відпочинок",
+                            BackgroundColor = Colors.Gray
+                        });
+                    }
+                }
+            };
+
             _ = RefreshMiniCalendarAsync();
         }
+        
 
         // --- Оновлення міні-календаря ---
         private async Task RefreshMiniCalendarAsync()

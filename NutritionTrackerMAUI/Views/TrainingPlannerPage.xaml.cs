@@ -19,7 +19,7 @@ namespace NutritionTrackerMAUI.Views
         private bool _isCustomProgramMode = false;
 
         private WorkoutProgram? _currentUserProgram;
-        private bool _currentUserProgramSelected = false; // флаг для первой загрузки программы
+        private bool _currentUserProgramSelected = false; 
 
         public ObservableCollection<CalendarDay> CalendarDays { get; set; } = new();
         public ObservableCollection<WorkoutProgram> Programs { get; set; } = new();
@@ -363,6 +363,33 @@ namespace NutritionTrackerMAUI.Views
                 await OnCalendarUpdated.Invoke();
         }
         public string? CurrentProgramName => _currentUserProgram?.Name;
+        public event Func<ObservableCollection<CalendarDay>, Task>? OnCalendarUpdatedWithDays;
+        private async void OnSelectProgramClicked(object sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.BindingContext is WorkoutProgram program)
+            {
+                _currentUserProgram = program;
+                _isCustomProgramMode = false;
+                GenerateCalendarFromProgram(program);
+
+                if (OnCalendarUpdatedWithDays != null)
+                    await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+            }
+        }
+
+        private async void OnSelectUserProgramClicked(object sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.BindingContext is WorkoutProgram program)
+            {
+                _currentUserProgram = program;
+                _isCustomProgramMode = !_currentUserProgram.IsLocked;
+                GenerateCalendarFromProgram(program);
+
+                if (OnCalendarUpdatedWithDays != null)
+                    await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+            }
+        }
+
 
         public class CalendarDay
         {
