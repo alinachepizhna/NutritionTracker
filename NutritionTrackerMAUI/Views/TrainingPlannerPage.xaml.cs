@@ -225,19 +225,13 @@ namespace NutritionTrackerMAUI.Views
 
             int totalDays = (int)(_goal.EndDate - _goal.StartDate).TotalDays + 1;
 
-            var workouts = new List<string>();
-            string[] sampleWorkouts = { "FullBody", "Руки", "Ноги", "Кардіо" };
-            for (int i = 0; i < totalDays; i++)
-            {
-                workouts.Add(i % 2 == 0 ? "FullBody" : "Руки"); 
-            }
+           
 
             var newProgram = new UserWorkoutProgram
             {
                 UserId = _user.Id,
                 Name = name,
                 Description = "Користувацька програма",
-                DailyWorkouts = string.Join(",", workouts)
             };
 
             await _db.Database.InsertAsync(newProgram);
