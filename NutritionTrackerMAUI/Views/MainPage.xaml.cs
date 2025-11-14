@@ -13,8 +13,8 @@ namespace NutritionTrackerMAUI.Views
     {
         private readonly SqliteDatabaseService _db;
         private readonly User _user;
+        private TrainingPlannerPage _plannerPage;
 
-        // Колекція для міні-календаря
         public ObservableCollection<TrainingPlannerPage.CalendarDay> MiniCalendarDays { get; set; } = new();
 
         public MainPage(User user, SqliteDatabaseService db)
@@ -23,12 +23,11 @@ namespace NutritionTrackerMAUI.Views
             _db = db ?? throw new ArgumentNullException(nameof(db));
 
             InitializeComponent();
-
+            BindingContext = this;
             MiniCalendarCollection.ItemsSource = MiniCalendarDays;
 
             LoadLastGoal();
 
-            // Додаємо вкладку планувальника тренувань
             _plannerPage = new TrainingPlannerPage(_user, _db)
             {
                 Title = "Планування",
@@ -37,88 +36,80 @@ namespace NutritionTrackerMAUI.Views
 
             Children.Add(_plannerPage);
 
-            _plannerPage.OnCalendarUpdatedWithDays += async (days) =>
+            _plannerPage.OnCalendarUpdatedWithDays += (days) =>
             {
-                MiniCalendarDays.Clear();
-
-                var today = DateTime.Today;
-                int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-                var weekStart = today.AddDays(-diff);
-                var weekEnd = weekStart.AddDays(6);
-
-                foreach (var date in Enumerable.Range(0, 7).Select(i => weekStart.AddDays(i)))
-                {
-                    var day = days.FirstOrDefault(d => d.Date.Date == date.Date);
-                    if (day != null)
-                    {
-                        MiniCalendarDays.Add(new TrainingPlannerPage.CalendarDay
-                        {
-                            Date = day.Date,
-                            DateText = day.Date.Day.ToString(),
-                            WorkoutType = day.WorkoutType,
-                            BackgroundColor = day.BackgroundColor,
-                        });
-                    }
-                    else
-                    {
-                        MiniCalendarDays.Add(new TrainingPlannerPage.CalendarDay
-                        {
-                            Date = date,
-                            DateText = date.Day.ToString(),
-                            WorkoutType = "Відпочинок",
-                            BackgroundColor = Colors.Gray
-                        });
-                    }
-                }
+                UpdateMiniCalendar(days.ToList()); // .ToList() создаёт List<CalendarDay>
+                return Task.CompletedTask;
             };
+
 
             _ = RefreshMiniCalendarAsync();
         }
-        
 
-        // --- Оновлення міні-календаря ---
         private async Task RefreshMiniCalendarAsync()
         {
             MiniCalendarDays.Clear();
-
-            if (_plannerPage == null) return;
-
             var today = DateTime.Today;
-
             int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
             var weekStart = today.AddDays(-diff);
-            var weekEnd = weekStart.AddDays(6);
+
+            if (_plannerPage.CurrentProgramName == null)
+            {
+                for (var date = weekStart; date < weekStart.AddDays(7); date = date.AddDays(1))
+                {
+                    MiniCalendarDays.Add(CreateCalendarDay(date, "Відпочинок", Colors.Gray));
+                }
+                return;
+            }
+
+            var programDays = _plannerPage.CalendarDays
+                                .Where(d => d.Date >= weekStart && d.Date < weekStart.AddDays(7))
+                                .ToList();
 
             var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
-            if (lastGoal == null) return;
-
-            // Фильтруем тренировки по текущей программе
-            var trainings = _plannerPage.CurrentProgramName != null
+            var trainingsInDb = lastGoal != null
                 ? await _db.Database.Table<TrainingPlan>()
-                                    .Where(t => t.UserId == _user.Id &&
-                                                t.GoalId == lastGoal.Id &&
-                                                t.ProgramName == _plannerPage.CurrentProgramName)
-                                    .ToListAsync()
-                : await _db.Database.Table<TrainingPlan>()
-                                    .Where(t => t.UserId == _user.Id &&
-                                                t.GoalId == lastGoal.Id)
-                                    .ToListAsync();
+                    .Where(t => t.UserId == _user.Id &&
+                                t.GoalId == lastGoal.Id &&
+                                t.ProgramName == _plannerPage.CurrentProgramName)
+                    .ToListAsync()
+                : new System.Collections.Generic.List<TrainingPlan>();
 
-            for (var date = weekStart; date <= weekEnd; date = date.AddDays(1))
+            for (var date = weekStart; date < weekStart.AddDays(7); date = date.AddDays(1))
             {
-                var workout = trainings.FirstOrDefault(t => t.Date.Date == date.Date);
-                var workoutType = workout?.WorkoutType ?? "Відпочинок";
-                var color = !string.IsNullOrEmpty(workout?.WorkoutType)
-                            ? WorkoutColorService.GetColor(workout.WorkoutType)
-                            : Colors.Gray;
+                var dayFromPlanner = programDays.FirstOrDefault(d => d.Date.Date == date.Date);
+                var dayFromDb = trainingsInDb.FirstOrDefault(t => t.Date.Date == date.Date);
+
+                string workoutType = dayFromDb?.WorkoutType ?? dayFromPlanner?.WorkoutType ?? "Відпочинок";
+                Color color = dayFromDb != null
+                              ? (dayFromDb.IsExtraWorkout ? Colors.Green : WorkoutColorService.GetColor(workoutType))
+                              : dayFromPlanner?.BackgroundColor ?? Colors.Gray;
 
                 MiniCalendarDays.Add(CreateCalendarDay(date, workoutType, color));
             }
         }
 
+        private void UpdateMiniCalendar(System.Collections.Generic.List<TrainingPlannerPage.CalendarDay> days)
+        {
+            MiniCalendarDays.Clear();
 
+            var today = DateTime.Today;
+            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var weekStart = today.AddDays(-diff);
 
-        // --- Універсальний метод для створення дня календаря ---
+            for (var i = 0; i < 7; i++)
+            {
+                var date = weekStart.AddDays(i);
+                var day = days.FirstOrDefault(d => d.Date.Date == date.Date);
+
+                MiniCalendarDays.Add(CreateCalendarDay(
+                    date,
+                    day?.WorkoutType ?? "Відпочинок",
+                    day?.BackgroundColor ?? Colors.Gray
+                ));
+            }
+        }
+
         private TrainingPlannerPage.CalendarDay CreateCalendarDay(DateTime date, string workoutType, Color color)
         {
             return new TrainingPlannerPage.CalendarDay
@@ -130,7 +121,6 @@ namespace NutritionTrackerMAUI.Views
             };
         }
 
-        // --- Завантаження останньої цілі користувача ---
         private async void LoadLastGoal()
         {
             var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
@@ -147,13 +137,10 @@ namespace NutritionTrackerMAUI.Views
             }
         }
 
-        // --- Обробник кнопки «Нова ціль» ---
         private async void OnNewGoalClicked(object sender, EventArgs e)
         {
             if (Navigation != null)
                 await Navigation.PushAsync(new GoalPage(_user, _db));
         }
-        private TrainingPlannerPage _plannerPage;
-
     }
 }

@@ -217,23 +217,51 @@ namespace NutritionTrackerMAUI.Views
             string name = await DisplayPromptAsync("Нова програма", "Введіть назву програми");
             if (string.IsNullOrWhiteSpace(name)) return;
 
+            if (_goal == null)
+            {
+                await DisplayAlert("⚠️", "Спочатку створіть ціль для тренувань.", "OK");
+                return;
+            }
+
+            int totalDays = (int)(_goal.EndDate - _goal.StartDate).TotalDays + 1;
+
+            var workouts = new List<string>();
+            string[] sampleWorkouts = { "FullBody", "Руки", "Ноги", "Кардіо" };
+            for (int i = 0; i < totalDays; i++)
+            {
+                workouts.Add(i % 2 == 0 ? "FullBody" : "Руки"); 
+            }
+
             var newProgram = new UserWorkoutProgram
             {
                 UserId = _user.Id,
                 Name = name,
                 Description = "Користувацька програма",
-                DailyWorkouts = string.Join(",", Enumerable.Repeat("Відпочинок", (int)(_goal.EndDate - _goal.StartDate).TotalDays + 1))
+                DailyWorkouts = string.Join(",", workouts)
             };
 
             await _db.Database.InsertAsync(newProgram);
 
-            UserPrograms.Add(new WorkoutProgram
+            var workoutProgram = new TrainingPlannerPage.WorkoutProgram
             {
-                Name = name,
-                Description = "Користувацька програма",
-                DailyWorkouts = newProgram.DailyWorkouts.Split(',').ToList()
-            });
+                Name = newProgram.Name,
+                Description = newProgram.Description,
+                DailyWorkouts = newProgram.DailyWorkouts.Split(',').ToList(),
+                IsLocked = false
+            };
+
+            _currentUserProgram = workoutProgram;
+            _isCustomProgramMode = true;
+            GenerateCalendarFromProgram(_currentUserProgram);
+
+            if (OnCalendarUpdatedWithDays != null)
+                await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+            UserPrograms.Add(workoutProgram);
+
+            await DisplayAlert("✅ Програма створена", $"Ви створили нову програму: {name}", "OK");
         }
+
+
 
         private async void OnDeleteUserProgramClicked(object sender, EventArgs e)
         {
@@ -297,7 +325,10 @@ namespace NutritionTrackerMAUI.Views
                  ? WorkoutColorService.GetColor(workoutType)
                  : Colors.Gray;
 
-
+                if (_isCustomProgramMode)
+                {
+                    bgColor = WorkoutColorService.GetColor(workoutType);
+                }
                 CalendarDays.Add(new CalendarDay
                 {
                     Date = date,
@@ -371,9 +402,10 @@ namespace NutritionTrackerMAUI.Views
                 _currentUserProgram = program;
                 _isCustomProgramMode = false;
                 GenerateCalendarFromProgram(program);
-
                 if (OnCalendarUpdatedWithDays != null)
                     await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+
+                    await DisplayAlert("✅ Програма обрана", $"Ви обрали програму: {program.Name}", "OK");
             }
         }
 
@@ -383,12 +415,17 @@ namespace NutritionTrackerMAUI.Views
             {
                 _currentUserProgram = program;
                 _isCustomProgramMode = !_currentUserProgram.IsLocked;
-                GenerateCalendarFromProgram(program);
+                _currentUserProgramSelected = true; 
+
 
                 if (OnCalendarUpdatedWithDays != null)
                     await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+
+                await DisplayAlert("✅ Програма обрана", $"Ви обрали програму: {program.Name}", "OK");
             }
         }
+
+
 
 
         public class CalendarDay

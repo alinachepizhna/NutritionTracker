@@ -55,13 +55,6 @@
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center"
                                            TextColor="White">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
-                                                <Setter Property="TextColor" Value="Yellow"/>
-                                                <Setter Property="FontSize" Value="20"/>
-                                            </DataTrigger>
-
-                                        </Label.Triggers>
                                     </Label>
 
 

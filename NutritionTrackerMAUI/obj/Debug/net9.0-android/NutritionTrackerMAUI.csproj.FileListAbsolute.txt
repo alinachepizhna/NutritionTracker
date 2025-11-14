@@ -1344,3 +1344,5 @@ D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-android\resizetizer\f\OpenSans-Regular.ttf
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-android\resizetizer\f\OpenSans-Semibold.ttf
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-android\resizetizer\6CD7C47F03026257-files.cache
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-android\assets\OpenSans-Regular.ttf
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-android\assets\OpenSans-Semibold.ttf
