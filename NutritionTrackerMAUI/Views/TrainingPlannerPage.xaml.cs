@@ -123,7 +123,6 @@ namespace NutritionTrackerMAUI.Views
         }
 
         private bool _isProgramSelectionInitializing = false;
-
         private async void UserProgramCollection_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (_isProgramSelectionInitializing) return;
@@ -145,22 +144,32 @@ namespace NutritionTrackerMAUI.Views
 
                     CalendarDays.Clear();
 
+                    // ...
                     if (savedPlans.Any())
                     {
                         foreach (var day in savedPlans)
                         {
-                            CalendarDays.Add(new CalendarDay
+                            bool isTrainingDay = day.WorkoutType != "Відпочинок";
+
+                            var calendarDay = new CalendarDay
                             {
                                 Date = day.Date,
-                                DateText = day.Date.Day.ToString(),
+                                DateText = isTrainingDay ? day.Date.Day.ToString() : "",
                                 WorkoutType = day.WorkoutType,
-                                BackgroundColor = day.IsExtraWorkout ? Colors.Green : Colors.Gray,
+                                BackgroundColor = isTrainingDay ? WorkoutColorService.GetColor(day.WorkoutType) : Colors.Gray,
                                 TextColor = Colors.White,
-                                IsExtraWorkout = day.IsExtraWorkout,
+                                IsExtraWorkout = isTrainingDay,
                                 IsCustomProgramMode = false
-                            });
+                            };
+
+                            if (string.IsNullOrWhiteSpace(calendarDay.DateText))
+                            {
+                                calendarDay.BackgroundColor = Colors.Gray;
+                            }
+
+                            CalendarDays.Add(calendarDay);
                         }
-                    }
+                    }               
                     else
                     {
                         GenerateCalendarFromProgram(program);
@@ -177,6 +186,7 @@ namespace NutritionTrackerMAUI.Views
 
             _isProgramSelectionInitializing = false;
         }
+
 
         private void OnCalendarDayTapped(object sender, EventArgs e)
         {
@@ -306,24 +316,24 @@ namespace NutritionTrackerMAUI.Views
             for (int i = 0; i < totalDays; i++)
             {
                 var date = _goal.StartDate.AddDays(i);
+
                 string workoutType = program.DailyWorkouts[i % program.DailyWorkouts.Count];
-                bool isTrainingDay = !_isCustomProgramMode ? _strategy.Name switch
-                {
-                    "Агресивно" => i % 7 < 5,
-                    "Помірно" => i % 7 < 4,
-                    "Повільно" => i % 7 < 2,
-                    _ => true
-                } : workoutType != "Відпочинок";
+
+                bool isTrainingDay = !_isCustomProgramMode
+                    ? _strategy.Name switch
+                    {
+                        "Агресивно" => i % 7 < 5,
+                        "Помірно" => i % 7 < 4,
+                        "Повільно" => i % 7 < 2,
+                        _ => true
+                    }
+                    : workoutType != "Відпочинок";
 
                 Color bgColor = isTrainingDay
-                 ? WorkoutColorService.GetColor(workoutType)
-                 : Colors.Gray;
+                    ? WorkoutColorService.GetColor(workoutType)
+                    : Colors.Gray;
 
-                if (_isCustomProgramMode)
-                {
-                    bgColor = WorkoutColorService.GetColor(workoutType);
-                }
-                CalendarDays.Add(new CalendarDay
+                var calendarDay = new CalendarDay
                 {
                     Date = date,
                     DateText = date.Day.ToString(),
@@ -332,11 +342,19 @@ namespace NutritionTrackerMAUI.Views
                     TextColor = Colors.White,
                     IsExtraWorkout = _isCustomProgramMode && isTrainingDay,
                     IsCustomProgramMode = _isCustomProgramMode
-                });
+                };
+
+                if (string.IsNullOrWhiteSpace(calendarDay.DateText))
+                {
+                    calendarDay.BackgroundColor = Colors.Gray;
+                }
+
+                CalendarDays.Add(calendarDay);
             }
 
             CalendarCollection.ItemsSource = CalendarDays;
         }
+
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
@@ -418,8 +436,6 @@ namespace NutritionTrackerMAUI.Views
                 await DisplayAlert("✅ Програма обрана", $"Ви обрали програму: {program.Name}", "OK");
             }
         }
-
-
 
 
         public class CalendarDay

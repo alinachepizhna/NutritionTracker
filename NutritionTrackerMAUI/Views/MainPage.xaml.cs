@@ -33,6 +33,7 @@ namespace NutritionTrackerMAUI.Views
                 Title = "Планування",
                 IconImageSource = "dumbbell.png"
             };
+            _plannerPage.SendAppearing();
 
             Children.Add(_plannerPage);
 
@@ -142,5 +143,6 @@ namespace NutritionTrackerMAUI.Views
             if (Navigation != null)
                 await Navigation.PushAsync(new GoalPage(_user, _db));
         }
+
     }
 }
