@@ -17,10 +17,10 @@ namespace NutritionTrackerMAUI.Views
         private Goal? _goal;
         private Strategy? _strategy;
         private bool _isCustomProgramMode = false;
-
+        private bool _isDataLoaded = false;
         private WorkoutProgram? _currentUserProgram;
-        private bool _currentUserProgramSelected = false; 
-
+        private bool _currentUserProgramSelected = false;
+        public Task InitialLoadTask { get; private set; } = Task.CompletedTask;
         public ObservableCollection<CalendarDay> CalendarDays { get; set; } = new();
         public ObservableCollection<WorkoutProgram> Programs { get; set; } = new();
         public ObservableCollection<WorkoutProgram> UserPrograms { get; set; } = new();
@@ -34,12 +34,27 @@ namespace NutritionTrackerMAUI.Views
             _db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
+
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            if (_isDataLoaded)
+            {
+                return;
+            }
+            InitialLoadTask = LoadAndSetupAsync();
+            await InitialLoadTask;
+            _isDataLoaded = true;
+        }
+
+
+        private async Task LoadAndSetupAsync()
+        {
             await LoadGoalAndStrategyAsync();
             LoadFixedPrograms();
             await LoadUserProgramsAsync();
+            await LoadCurrentUserProgramAndCalendarAsync(); 
 
             if (!_currentUserProgramSelected && _goal != null)
             {
@@ -399,6 +414,7 @@ namespace NutritionTrackerMAUI.Views
             }
 
             _isCustomProgramMode = false;
+            _isDataLoaded = true;
 
             await DisplayAlert("✅ Успіх", "План тренувань збережено!", "OK");
 
@@ -436,8 +452,76 @@ namespace NutritionTrackerMAUI.Views
                 await DisplayAlert("✅ Програма обрана", $"Ви обрали програму: {program.Name}", "OK");
             }
         }
+        private async Task LoadCurrentUserProgramAndCalendarAsync()
+        {
+            if (_goal == null) return;
 
+            var latestPlan = await _db.Database.Table<TrainingPlan>()
+                                              .Where(t => t.UserId == _user.Id && t.GoalId == _goal.Id)
+                                              .OrderByDescending(t => t.Date)
+                                              .FirstOrDefaultAsync();
 
+            if (latestPlan != null)
+            {
+                var programToLoad = UserPrograms.FirstOrDefault(p => p.Name == latestPlan.ProgramName)
+                                    ?? Programs.FirstOrDefault(p => p.Name == latestPlan.ProgramName);
+
+                if (programToLoad != null)
+                {
+                    _currentUserProgram = programToLoad;
+                    _currentUserProgramSelected = true;
+                    _isCustomProgramMode = !_currentUserProgram.IsLocked;
+
+                    var savedPlans = await _db.Database.Table<TrainingPlan>()
+                                                     .Where(t => t.UserId == _user.Id &&
+                                                                 t.GoalId == _goal.Id &&
+                                                                 t.ProgramName == _currentUserProgram.Name)
+                                                     .OrderBy(t => t.Date)
+                                                     .ToListAsync();
+
+                    CalendarDays.Clear();
+
+                    if (savedPlans.Any())
+                    {
+                        foreach (var day in savedPlans)
+                        {
+                            bool isTrainingDay = day.WorkoutType != "Відпочинок";
+
+                            var calendarDay = new CalendarDay
+                            {
+                                Date = day.Date,
+                                DateText = isTrainingDay ? day.Date.Day.ToString() : "",
+                                WorkoutType = day.WorkoutType,
+                                BackgroundColor = isTrainingDay ? WorkoutColorService.GetColor(day.WorkoutType) : Colors.Gray,
+                                TextColor = Colors.White,
+                                IsExtraWorkout = day.IsExtraWorkout,
+                                IsCustomProgramMode = false
+                            };
+
+                            if (string.IsNullOrWhiteSpace(calendarDay.DateText))
+                            {
+                                calendarDay.BackgroundColor = Colors.Gray;
+                            }
+
+                            CalendarDays.Add(calendarDay);
+                        }
+
+                        CalendarCollection.ItemsSource = CalendarDays;
+
+                        if (OnCalendarUpdatedWithDays != null)
+                            await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+                    }
+                    else if (_currentUserProgram != null)
+                    {
+                        GenerateCalendarFromProgram(_currentUserProgram);
+
+                        if (OnCalendarUpdatedWithDays != null)
+                            await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+                    }
+                }
+            }
+        }
+    
         public class CalendarDay
         {
             public DateTime Date { get; set; }

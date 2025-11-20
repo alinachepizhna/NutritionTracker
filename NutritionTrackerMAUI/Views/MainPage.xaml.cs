@@ -1,8 +1,8 @@
-﻿using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
+﻿using Microsoft.Maui.Graphics;
 using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System;
+using System.Collections.Generic; 
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,20 +33,36 @@ namespace NutritionTrackerMAUI.Views
                 Title = "Планування",
                 IconImageSource = "dumbbell.png"
             };
-            _plannerPage.SendAppearing();
 
             Children.Add(_plannerPage);
 
             _plannerPage.OnCalendarUpdatedWithDays += (days) =>
             {
-                UpdateMiniCalendar(days.ToList()); // .ToList() создаёт List<CalendarDay>
+
+                UpdateMiniCalendar(days.ToList());
+                UpdateTodayWorkout(days.ToList()); 
                 return Task.CompletedTask;
             };
-
-
-            _ = RefreshMiniCalendarAsync();
         }
 
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await _plannerPage.InitialLoadTask;
+            await Task.Delay(100);
+            if (!MiniCalendarDays.Any())
+            {
+                await RefreshMiniCalendarAsync();
+            }
+        }
+        private async void MainPage_CurrentPageChanged(object? sender, EventArgs e)
+        {
+            if (CurrentPage?.Title == "Головна")
+            {
+                await _plannerPage.InitialLoadTask;
+                await RefreshMiniCalendarAsync();
+            }
+        }
         private async Task RefreshMiniCalendarAsync()
         {
             MiniCalendarDays.Clear();
@@ -54,60 +70,71 @@ namespace NutritionTrackerMAUI.Views
             int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
             var weekStart = today.AddDays(-diff);
 
-            if (_plannerPage.CurrentProgramName == null)
+            var plannerDays = _plannerPage.CalendarDays.ToList(); 
+
+            if (!plannerDays.Any())
             {
+
                 for (var date = weekStart; date < weekStart.AddDays(7); date = date.AddDays(1))
                 {
                     MiniCalendarDays.Add(CreateCalendarDay(date, "Відпочинок", Colors.Gray));
                 }
+                UpdateTodayWorkout(new List<TrainingPlannerPage.CalendarDay>()); // Оновлюємо етикетку
                 return;
             }
 
-            var programDays = _plannerPage.CalendarDays
-                                .Where(d => d.Date >= weekStart && d.Date < weekStart.AddDays(7))
-                                .ToList();
 
-            var lastGoal = await _db.GetLatestGoalAsync(_user.Id);
-            var trainingsInDb = lastGoal != null
-                ? await _db.Database.Table<TrainingPlan>()
-                    .Where(t => t.UserId == _user.Id &&
-                                t.GoalId == lastGoal.Id &&
-                                t.ProgramName == _plannerPage.CurrentProgramName)
-                    .ToListAsync()
-                : new System.Collections.Generic.List<TrainingPlan>();
+            var programDays = plannerDays
+                                         .Where(d => d.Date.Date >= weekStart.Date && d.Date.Date < weekStart.AddDays(7).Date)
+                                         .ToList();
 
             for (var date = weekStart; date < weekStart.AddDays(7); date = date.AddDays(1))
             {
                 var dayFromPlanner = programDays.FirstOrDefault(d => d.Date.Date == date.Date);
-                var dayFromDb = trainingsInDb.FirstOrDefault(t => t.Date.Date == date.Date);
 
-                string workoutType = dayFromDb?.WorkoutType ?? dayFromPlanner?.WorkoutType ?? "Відпочинок";
-                Color color = dayFromDb != null
-                              ? (dayFromDb.IsExtraWorkout ? Colors.Green : WorkoutColorService.GetColor(workoutType))
-                              : dayFromPlanner?.BackgroundColor ?? Colors.Gray;
+                string workoutType = dayFromPlanner?.WorkoutType ?? "Відпочинок";
+                Color color = dayFromPlanner?.BackgroundColor ?? Colors.Gray;
+
+                MiniCalendarDays.Add(CreateCalendarDay(date, workoutType, color));
+            }
+            UpdateTodayWorkout(plannerDays); 
+        }
+
+        private void UpdateMiniCalendar(List<TrainingPlannerPage.CalendarDay> allDays)
+        {
+            MiniCalendarDays.Clear();
+            var today = DateTime.Today;
+            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var weekStart = today.AddDays(-diff);
+
+            var programDays = allDays
+                                .Where(d => d.Date.Date >= weekStart.Date && d.Date.Date < weekStart.AddDays(7).Date)
+                                .ToList();
+
+            for (var date = weekStart; date < weekStart.AddDays(7); date = date.AddDays(1))
+            {
+                var dayFromPlanner = programDays.FirstOrDefault(d => d.Date.Date == date.Date);
+
+                string workoutType = dayFromPlanner?.WorkoutType ?? "Відпочинок";
+                Color color = dayFromPlanner?.BackgroundColor ?? Colors.Gray;
 
                 MiniCalendarDays.Add(CreateCalendarDay(date, workoutType, color));
             }
         }
 
-        private void UpdateMiniCalendar(System.Collections.Generic.List<TrainingPlannerPage.CalendarDay> days)
+        private void UpdateTodayWorkout(List<TrainingPlannerPage.CalendarDay> allDays)
         {
-            MiniCalendarDays.Clear();
+            var todayPlan = allDays.FirstOrDefault(d => d.Date.Date == DateTime.Today.Date);
 
-            var today = DateTime.Today;
-            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-            var weekStart = today.AddDays(-diff);
-
-            for (var i = 0; i < 7; i++)
+            if (todayPlan != null && todayPlan.WorkoutType != "Відпочинок")
             {
-                var date = weekStart.AddDays(i);
-                var day = days.FirstOrDefault(d => d.Date.Date == date.Date);
-
-                MiniCalendarDays.Add(CreateCalendarDay(
-                    date,
-                    day?.WorkoutType ?? "Відпочинок",
-                    day?.BackgroundColor ?? Colors.Gray
-                ));
+                TodayWorkoutLabel.Text = $"Сьогодні: {todayPlan.WorkoutType} 🔥";
+                TodayWorkoutLabel.TextColor = todayPlan.BackgroundColor;
+            }
+            else
+            {
+                TodayWorkoutLabel.Text = "Сьогодні: Відпочинок. Відновлюйся! 😌";
+                TodayWorkoutLabel.TextColor = Colors.Gray;
             }
         }
 
@@ -143,6 +170,5 @@ namespace NutritionTrackerMAUI.Views
             if (Navigation != null)
                 await Navigation.PushAsync(new GoalPage(_user, _db));
         }
-
     }
 }
