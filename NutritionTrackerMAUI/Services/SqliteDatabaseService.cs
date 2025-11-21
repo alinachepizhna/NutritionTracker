@@ -25,6 +25,7 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<Goal>().Wait();     // Таблиця цілей
             _database.CreateTableAsync<TrainingPlan>().Wait();
             _database.CreateTableAsync<UserWorkoutProgram>().Wait();
+            _database.CreateTableAsync<UserCurrentProgram>().Wait();
 
         }
 
@@ -131,6 +132,38 @@ namespace NutritionTrackerMAUI.Services
                             .Where(t => t.UserId == userId)
                             .ToListAsync();
         }
-    
+        // ===============================
+        // 📅 --- ПОТОЧНА ПРОГРАМА КОРИСТУВАЧА ---
+        // ===============================
+
+        // Отримати останню обрану програму для поточної цілі користувача
+        public Task<UserCurrentProgram?> GetUserCurrentProgramAsync(int userId, int goalId) =>
+            _database.Table<UserCurrentProgram>()
+                     .Where(p => p.UserId == userId && p.GoalId == goalId)
+                     .FirstOrDefaultAsync();
+
+        // Зберегти або оновити поточну обрану програму
+        public async Task SaveUserCurrentProgramAsync(int userId, int goalId, string programName)
+        {
+            var currentProgram = await GetUserCurrentProgramAsync(userId, goalId);
+
+            if (currentProgram == null)
+            {
+                currentProgram = new UserCurrentProgram
+                {
+                    UserId = userId,
+                    GoalId = goalId,
+                    ProgramName = programName,
+                    LastSelectedDate = DateTime.Now
+                };
+                await _database.InsertAsync(currentProgram);
+            }
+            else
+            {
+                currentProgram.ProgramName = programName;
+                currentProgram.LastSelectedDate = DateTime.Now;
+                await _database.UpdateAsync(currentProgram);
+            }
         }
+    }
     }

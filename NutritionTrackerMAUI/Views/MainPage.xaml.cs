@@ -2,7 +2,7 @@
 using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,23 +36,35 @@ namespace NutritionTrackerMAUI.Views
 
             Children.Add(_plannerPage);
 
-            _plannerPage.OnCalendarUpdatedWithDays += (days) =>
+            _plannerPage.OnCalendarUpdatedWithDays += async (days) =>
             {
-
-                UpdateMiniCalendar(days.ToList());
-                UpdateTodayWorkout(days.ToList()); 
-                return Task.CompletedTask;
+                if (days != null && days.Any())
+                {
+                    UpdateMiniCalendar(days.ToList());
+                    UpdateTodayWorkout(days.ToList());
+                }
+                await Task.CompletedTask;
             };
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _plannerPage.InitialLoadTask;
-            await Task.Delay(100);
-            if (!MiniCalendarDays.Any())
+
+            if (_plannerPage != null)
             {
-                await RefreshMiniCalendarAsync();
+                await _plannerPage.InitializeDataAsync();
+
+                if (_plannerPage.CalendarDays.Any())
+                {
+                    await RefreshMiniCalendarAsync();
+                    UpdateTodayWorkout(_plannerPage.CalendarDays.ToList());
+                }
+                else
+                {
+                    await Task.Delay(200);
+                    await RefreshMiniCalendarAsync();
+                }
             }
         }
         private async void MainPage_CurrentPageChanged(object? sender, EventArgs e)
@@ -70,7 +82,7 @@ namespace NutritionTrackerMAUI.Views
             int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
             var weekStart = today.AddDays(-diff);
 
-            var plannerDays = _plannerPage.CalendarDays.ToList(); 
+            var plannerDays = _plannerPage.CalendarDays.ToList();
 
             if (!plannerDays.Any())
             {
@@ -97,7 +109,7 @@ namespace NutritionTrackerMAUI.Views
 
                 MiniCalendarDays.Add(CreateCalendarDay(date, workoutType, color));
             }
-            UpdateTodayWorkout(plannerDays); 
+            UpdateTodayWorkout(plannerDays);
         }
 
         private void UpdateMiniCalendar(List<TrainingPlannerPage.CalendarDay> allDays)
@@ -165,6 +177,14 @@ namespace NutritionTrackerMAUI.Views
             }
         }
 
+        private async void OnRefreshCalendarClicked(object sender, EventArgs e)
+        {
+            await _plannerPage.ForceReloadAsync();
+            await RefreshMiniCalendarAsync();
+            LoadLastGoal();
+            MiniCalendarCollection.ItemsSource = null;
+            MiniCalendarCollection.ItemsSource = MiniCalendarDays;
+        }
         private async void OnNewGoalClicked(object sender, EventArgs e)
         {
             if (Navigation != null)
@@ -172,3 +192,4 @@ namespace NutritionTrackerMAUI.Views
         }
     }
 }
+

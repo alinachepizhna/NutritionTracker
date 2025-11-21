@@ -39,29 +39,31 @@ namespace NutritionTrackerMAUI.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            if (_isDataLoaded)
+            await InitializeDataAsync();
+        }
+
+        public async Task InitializeDataAsync()
+        {
+            if (_isDataLoaded) return;
+            if (InitialLoadTask == null || InitialLoadTask.IsCompleted)
             {
-                return;
+                InitialLoadTask = LoadAndSetupAsync();
             }
-            InitialLoadTask = LoadAndSetupAsync();
             await InitialLoadTask;
             _isDataLoaded = true;
         }
-
-
         private async Task LoadAndSetupAsync()
         {
             await LoadGoalAndStrategyAsync();
             LoadFixedPrograms();
             await LoadUserProgramsAsync();
-            await LoadCurrentUserProgramAndCalendarAsync(); 
+            await LoadCurrentUserProgramAndCalendarAsync();
 
             if (!_currentUserProgramSelected && _goal != null)
             {
                 GenerateEmptyCalendar(_goal.StartDate, _goal.EndDate);
             }
         }
-
         private async Task LoadGoalAndStrategyAsync()
         {
             _goal = await _db.GetLatestGoalAsync(_user.Id);
@@ -184,7 +186,7 @@ namespace NutritionTrackerMAUI.Views
 
                             CalendarDays.Add(calendarDay);
                         }
-                    }               
+                    }
                     else
                     {
                         GenerateCalendarFromProgram(program);
@@ -250,7 +252,7 @@ namespace NutritionTrackerMAUI.Views
 
             int totalDays = (int)(_goal.EndDate - _goal.StartDate).TotalDays + 1;
 
-           
+
 
             var newProgram = new UserWorkoutProgram
             {
@@ -430,10 +432,15 @@ namespace NutritionTrackerMAUI.Views
                 _currentUserProgram = program;
                 _isCustomProgramMode = false;
                 GenerateCalendarFromProgram(program);
+
+                if (_goal != null)
+                {
+                    await _db.SaveUserCurrentProgramAsync(_user.Id, _goal.Id, program.Name);
+                }
                 if (OnCalendarUpdatedWithDays != null)
                     await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
 
-                    await DisplayAlert("✅ Програма обрана", $"Ви обрали програму: {program.Name}", "OK");
+                await DisplayAlert("✅ Програма обрана", $"Ви обрали програму: {program.Name}", "OK");
             }
         }
 
@@ -443,8 +450,12 @@ namespace NutritionTrackerMAUI.Views
             {
                 _currentUserProgram = program;
                 _isCustomProgramMode = !_currentUserProgram.IsLocked;
-                _currentUserProgramSelected = true; 
-
+                _currentUserProgramSelected = true;
+                if (_goal != null)
+                {
+                    await _db.SaveUserCurrentProgramAsync(_user.Id, _goal.Id, program.Name);
+                }
+                GenerateCalendarFromProgram(program); 
 
                 if (OnCalendarUpdatedWithDays != null)
                     await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
@@ -456,72 +467,85 @@ namespace NutritionTrackerMAUI.Views
         {
             if (_goal == null) return;
 
-            var latestPlan = await _db.Database.Table<TrainingPlan>()
-                                              .Where(t => t.UserId == _user.Id && t.GoalId == _goal.Id)
-                                              .OrderByDescending(t => t.Date)
-                                              .FirstOrDefaultAsync();
+            WorkoutProgram? programToLoad = null;
+            var currentProgramSelection = await _db.GetUserCurrentProgramAsync(_user.Id, _goal.Id);
 
-            if (latestPlan != null)
+            if (currentProgramSelection != null)
             {
-                var programToLoad = UserPrograms.FirstOrDefault(p => p.Name == latestPlan.ProgramName)
-                                    ?? Programs.FirstOrDefault(p => p.Name == latestPlan.ProgramName);
+                programToLoad = UserPrograms.FirstOrDefault(p => p.Name == currentProgramSelection.ProgramName)
+                             ?? Programs.FirstOrDefault(p => p.Name == currentProgramSelection.ProgramName);
+            }
 
-                if (programToLoad != null)
+            if (programToLoad == null)
+            {
+                var latestPlan = await _db.Database.Table<TrainingPlan>()
+                                          .Where(t => t.UserId == _user.Id && t.GoalId == _goal.Id)
+                                          .OrderByDescending(t => t.Date)
+                                          .FirstOrDefaultAsync();
+
+                if (latestPlan != null)
                 {
-                    _currentUserProgram = programToLoad;
-                    _currentUserProgramSelected = true;
-                    _isCustomProgramMode = !_currentUserProgram.IsLocked;
-
-                    var savedPlans = await _db.Database.Table<TrainingPlan>()
-                                                     .Where(t => t.UserId == _user.Id &&
-                                                                 t.GoalId == _goal.Id &&
-                                                                 t.ProgramName == _currentUserProgram.Name)
-                                                     .OrderBy(t => t.Date)
-                                                     .ToListAsync();
-
-                    CalendarDays.Clear();
-
-                    if (savedPlans.Any())
-                    {
-                        foreach (var day in savedPlans)
-                        {
-                            bool isTrainingDay = day.WorkoutType != "Відпочинок";
-
-                            var calendarDay = new CalendarDay
-                            {
-                                Date = day.Date,
-                                DateText = isTrainingDay ? day.Date.Day.ToString() : "",
-                                WorkoutType = day.WorkoutType,
-                                BackgroundColor = isTrainingDay ? WorkoutColorService.GetColor(day.WorkoutType) : Colors.Gray,
-                                TextColor = Colors.White,
-                                IsExtraWorkout = day.IsExtraWorkout,
-                                IsCustomProgramMode = false
-                            };
-
-                            if (string.IsNullOrWhiteSpace(calendarDay.DateText))
-                            {
-                                calendarDay.BackgroundColor = Colors.Gray;
-                            }
-
-                            CalendarDays.Add(calendarDay);
-                        }
-
-                        CalendarCollection.ItemsSource = CalendarDays;
-
-                        if (OnCalendarUpdatedWithDays != null)
-                            await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
-                    }
-                    else if (_currentUserProgram != null)
-                    {
-                        GenerateCalendarFromProgram(_currentUserProgram);
-
-                        if (OnCalendarUpdatedWithDays != null)
-                            await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
-                    }
+                    programToLoad = UserPrograms.FirstOrDefault(p => p.Name == latestPlan.ProgramName)
+                                 ?? Programs.FirstOrDefault(p => p.Name == latestPlan.ProgramName);
                 }
             }
+
+            if (programToLoad != null)
+            {
+                _currentUserProgram = programToLoad;
+                _currentUserProgramSelected = true;
+                _isCustomProgramMode = !_currentUserProgram.IsLocked;
+
+                await LoadCalendarForSelectedProgramAsync(_currentUserProgram.Name);
+            }
+            else
+            {
+                GenerateEmptyCalendar(_goal.StartDate, _goal.EndDate);
+            }
         }
-    
+
+        private async Task LoadCalendarForSelectedProgramAsync(string programName)
+        {
+            var savedPlans = await _db.Database.Table<TrainingPlan>()
+                                              .Where(t => t.UserId == _user.Id &&
+                                                          t.GoalId == _goal.Id &&
+                                                          t.ProgramName == programName)
+                                              .OrderBy(t => t.Date)
+                                              .ToListAsync();
+
+            CalendarDays.Clear();
+
+            if (savedPlans.Any())
+            {
+                foreach (var day in savedPlans)
+                {
+                    bool isTrainingDay = day.WorkoutType != "Відпочинок";
+
+                    var calendarDay = new CalendarDay
+                    {
+                        Date = day.Date,
+                        DateText = day.Date.Day.ToString(), 
+                        WorkoutType = day.WorkoutType,
+                        BackgroundColor = isTrainingDay ? WorkoutColorService.GetColor(day.WorkoutType) : Colors.Gray,
+                        TextColor = Colors.White,
+                        IsExtraWorkout = day.IsExtraWorkout,
+                        IsCustomProgramMode = _isCustomProgramMode
+                    };
+
+                    CalendarDays.Add(calendarDay);
+                }
+            }
+            else 
+            {
+                GenerateCalendarFromProgram(_currentUserProgram!);
+            }
+
+            CalendarCollection.ItemsSource = CalendarDays;
+
+            if (OnCalendarUpdatedWithDays != null)
+                await OnCalendarUpdatedWithDays.Invoke(CalendarDays);
+        }
+
         public class CalendarDay
         {
             public DateTime Date { get; set; }
@@ -539,6 +563,12 @@ namespace NutritionTrackerMAUI.Views
             public string Description { get; set; } = string.Empty;
             public List<string> DailyWorkouts { get; set; } = new();
             public bool IsLocked { get; set; } = false;
+        }
+        public async Task ForceReloadAsync()
+        {
+            _isDataLoaded = false;
+            InitialLoadTask = LoadAndSetupAsync();
+            await InitialLoadTask;
         }
     }
 }

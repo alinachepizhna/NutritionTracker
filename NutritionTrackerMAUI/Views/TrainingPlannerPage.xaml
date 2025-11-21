@@ -12,6 +12,7 @@
             <x:String>FullBody</x:String>
             <x:String>Кардіо</x:String>
             <x:String>Відновлення</x:String>
+            <x:String>Відпочинок</x:String>
         </x:Array>
     </ContentPage.Resources>
 
@@ -97,29 +98,34 @@
                            VerticalOptions="Center"
                            TextColor="{Binding TextColor}"
                            FontAttributes="Bold"/>
-                                <Label Text="{Binding WorkoutType}" 
-                           FontSize="10" 
-                           TextColor="White" 
-                           HorizontalOptions="Center">
+
+                                <!-- ОНОВЛЕНО: Label, який відображається, коли Picker прихований (готовий план) -->
+                                <Label x:Name="WorkoutLabel"
+                                       Text="{Binding WorkoutType}" 
+                                       FontSize="12" 
+                                       TextColor="White" 
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
-                                         Binding="{Binding IsCustomProgramMode}"
-                                         Value="False">
-                                            <Setter Property="TextColor" Value="White"/>
+                                                     Binding="{Binding IsCustomProgramMode}"
+                                                     Value="True">
+                                            <Setter Property="IsVisible" Value="False"/>
                                         </DataTrigger>
+
                                     </Label.Triggers>
                                 </Label>
 
                                 <Picker Title="Виберіть тренування"
-                            ItemsSource="{StaticResource WorkoutTypes}"
-                            SelectedItem="{Binding WorkoutType}"
-                            TextColor="White"
-                            BackgroundColor="#2A2A2A"
-                            SelectedIndexChanged="OnWorkoutTypeChanged">
+                                        ItemsSource="{StaticResource WorkoutTypes}"
+                                        SelectedItem="{Binding WorkoutType}"
+                                        TextColor="White"
+                                        BackgroundColor="#2A2A2A"
+                                        SelectedIndexChanged="OnWorkoutTypeChanged">
                                     <Picker.Triggers>
                                         <DataTrigger TargetType="Picker"
-                                         Binding="{Binding IsCustomProgramMode}"
-                                         Value="False">
+                                                     Binding="{Binding IsCustomProgramMode}"
+                                                     Value="False">
                                             <Setter Property="IsVisible" Value="False"/>
                                         </DataTrigger>
                                     </Picker.Triggers>
