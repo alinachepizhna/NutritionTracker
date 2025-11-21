@@ -15,7 +15,10 @@ namespace NutritionTrackerMAUI.Models
         public double Protein { get; set; }
         public double Fat { get; set; }
         public double Carbs { get; set; }
-
         public bool IsCustom { get; set; } = false; // Чи це додав користувач вручну
+        public bool HasGluten { get; set; }   // Містить глютен
+        public bool HasLactose { get; set; }  // Містить лактозу
+        public bool HasNuts { get; set; }     // Містить горіхи
+        public bool HasSugar { get; set; }    // Містить цукор
     }
 }

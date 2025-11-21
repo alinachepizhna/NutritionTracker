@@ -130,6 +130,10 @@ namespace NutritionTrackerMAUI.Views
             await LoadDataAsync();
         }
 
+        private async void OnDietarySettingsClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new DietarySettingsPage(_user, _db));
+        }
         private async Task EditEntryCaloriesAsync(FoodLogEntry entry)
         {
             string newCalsStr = await DisplayPromptAsync("Редагування", "Нова калорійність:",

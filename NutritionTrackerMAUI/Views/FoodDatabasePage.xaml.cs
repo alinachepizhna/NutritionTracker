@@ -1,4 +1,4 @@
-using NutritionTrackerMAUI.Models;
+п»їusing NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System.Collections.ObjectModel;
 
@@ -10,8 +10,8 @@ namespace NutritionTrackerMAUI.Views
         private readonly User _user; 
         private List<FoodItem> _allItems = new();
         public ObservableCollection<FoodItem> FilteredItems { get; set; } = new();
-        private string _selectedCategory = "Всі";
-
+        private string _selectedCategory = "Р’СЃС–";
+        private UserDietarySettings _dietSettings;
         public FoodDatabasePage(User user, SqliteDatabaseService db)
         {
             InitializeComponent();
@@ -24,7 +24,8 @@ namespace NutritionTrackerMAUI.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _db.SeedDatabaseAsync(); // Переконайтеся, що цей метод є у сервісі (з попередніх відповідей)
+            await _db.SeedDatabaseAsync();
+            _dietSettings = await _db.GetDietarySettingsAsync(_user.Id);
             await LoadDataAsync();
         }
 
@@ -36,7 +37,7 @@ namespace NutritionTrackerMAUI.Views
 
         private void CreateCategoryChips()
         {
-            string[] categories = { "Всі", "М'ясо", "Риба", "Крупи", "Овочі", "Фрукти", "Молочні", "Готові страви", "Своє" };
+            string[] categories = { "Р’СЃС–", "Рњ'СЏСЃРѕ", "Р РёР±Р°", "РљСЂСѓРїРё", "РћРІРѕС‡С–", "Р¤СЂСѓРєС‚Рё", "РњРѕР»РѕС‡РЅС–", "Р“РѕС‚РѕРІС– СЃС‚СЂР°РІРё", "РЎРІРѕС”" };
 
             foreach (var cat in categories)
             {
@@ -47,7 +48,7 @@ namespace NutritionTrackerMAUI.Views
                     HeightRequest = 35,
                     CornerRadius = 15,
                     Padding = new Thickness(10, 0),
-                    BackgroundColor = cat == "Всі" ? Colors.DarkRed : Colors.LightGray,
+                    BackgroundColor = cat == "Р’СЃС–" ? Colors.DarkRed : Colors.LightGray,
                     TextColor = Colors.White
                 };
 
@@ -76,13 +77,12 @@ namespace NutritionTrackerMAUI.Views
 
         private void ApplyFilter()
         {
-            var searchText = ProductSearch.Text?.ToLower() ?? "";
-
             var query = _allItems.AsEnumerable();
 
-            if (_selectedCategory == "Своє")
+            var searchText = ProductSearch.Text?.ToLower() ?? "";
+            if (_selectedCategory == "РЎРІРѕС”")
                 query = query.Where(x => x.IsCustom);
-            else if (_selectedCategory != "Всі")
+            else if (_selectedCategory != "Р’СЃС–")
                 query = query.Where(x => x.Category == _selectedCategory);
 
             if (!string.IsNullOrWhiteSpace(searchText))
@@ -97,13 +97,13 @@ namespace NutritionTrackerMAUI.Views
 
         private async void OnAddCustomProductClicked(object sender, EventArgs e)
         {
-            string name = await DisplayPromptAsync("Новий продукт", "Назва продукту:");
+            string name = await DisplayPromptAsync("РќРѕРІРёР№ РїСЂРѕРґСѓРєС‚", "РќР°Р·РІР° РїСЂРѕРґСѓРєС‚Сѓ:");
             if (string.IsNullOrWhiteSpace(name)) return;
 
-            string calStr = await DisplayPromptAsync("Калорійність", "Ккал на 100г:", keyboard: Keyboard.Numeric);
-            string protStr = await DisplayPromptAsync("Білки", "Білки на 100г:", keyboard: Keyboard.Numeric);
-            string fatStr = await DisplayPromptAsync("Жири", "Жири на 100г:", keyboard: Keyboard.Numeric);
-            string carbStr = await DisplayPromptAsync("Вуглеводи", "Вуглеводи на 100г:", keyboard: Keyboard.Numeric);
+            string calStr = await DisplayPromptAsync("РљР°Р»РѕСЂС–Р№РЅС–СЃС‚СЊ", "РљРєР°Р» РЅР° 100Рі:", keyboard: Keyboard.Numeric);
+            string protStr = await DisplayPromptAsync("Р‘С–Р»РєРё", "Р‘С–Р»РєРё РЅР° 100Рі:", keyboard: Keyboard.Numeric);
+            string fatStr = await DisplayPromptAsync("Р–РёСЂРё", "Р–РёСЂРё РЅР° 100Рі:", keyboard: Keyboard.Numeric);
+            string carbStr = await DisplayPromptAsync("Р’СѓРіР»РµРІРѕРґРё", "Р’СѓРіР»РµРІРѕРґРё РЅР° 100Рі:", keyboard: Keyboard.Numeric);
 
             if (double.TryParse(calStr, out double cal) &&
                 double.TryParse(protStr, out double prot) &&
@@ -113,7 +113,7 @@ namespace NutritionTrackerMAUI.Views
                 var newItem = new FoodItem
                 {
                     Name = name,
-                    Category = "Своє",
+                    Category = "РЎРІРѕС”",
                     Calories = cal,
                     Protein = prot,
                     Fat = fat,
@@ -122,7 +122,7 @@ namespace NutritionTrackerMAUI.Views
                 };
 
                 await _db.AddFoodItemAsync(newItem);
-                await DisplayAlert("Успіх", "Продукт додано в базу!", "OK");
+                await DisplayAlert("РЈСЃРїС–С…", "РџСЂРѕРґСѓРєС‚ РґРѕРґР°РЅРѕ РІ Р±Р°Р·Сѓ!", "OK");
                 await LoadDataAsync();
             }
         }
@@ -131,7 +131,29 @@ namespace NutritionTrackerMAUI.Views
         {
             if (e.Parameter is not FoodItem item) return;
 
-            string weightStr = await DisplayPromptAsync(item.Name, "Введіть вагу (грам):", keyboard: Keyboard.Numeric);
+            List<string> warnings = new List<string>();
+
+            if (_dietSettings != null)
+            {
+                if (_dietSettings.AvoidGluten && item.HasGluten) warnings.Add("Р“Р›Р®РўР•Рќ");
+                if (_dietSettings.AvoidLactose && item.HasLactose) warnings.Add("Р›РђРљРўРћР—РЈ");
+                if (_dietSettings.AvoidNuts && item.HasNuts) warnings.Add("Р“РћР Р†РҐР");
+                if (_dietSettings.AvoidSugar && item.HasSugar) warnings.Add("Р¦РЈРљРћР ");
+            }
+
+            if (warnings.Count > 0)
+            {
+                string warningText = string.Join(", ", warnings);
+                bool proceed = await DisplayAlert(
+                    "вљ пёЏ РџРћРџР•Р Р•Р”Р–Р•РќРќРЇ",
+                    $"Р¦РµР№ РїСЂРѕРґСѓРєС‚ РјС–СЃС‚РёС‚СЊ {warningText}, С‰Рѕ СЃСѓРїРµСЂРµС‡РёС‚СЊ РІР°С€С–Р№ РґС–С”С‚С–.\n\nР’Рё С‚РѕС‡РЅРѕ С…РѕС‡РµС‚Рµ Р№РѕРіРѕ РґРѕРґР°С‚Рё?",
+                    "РўР°Рє, РґРѕРґР°С‚Рё",
+                    "РќС–, СЃРєР°СЃСѓРІР°С‚Рё");
+
+                if (!proceed) return; 
+            }
+
+            string weightStr = await DisplayPromptAsync(item.Name, "Р’РІРµРґС–С‚СЊ РІР°РіСѓ (РіСЂР°Рј):", keyboard: Keyboard.Numeric);
 
             if (double.TryParse(weightStr, out double weight))
             {
@@ -142,8 +164,8 @@ namespace NutritionTrackerMAUI.Views
                 double finalFat = item.Fat * factor;
                 double finalCarbs = item.Carbs * factor;
 
-                bool add = await DisplayAlert("Додати?",
-                    $"{weight}г - це {Math.Round(finalCals)} ккал. Додати в щоденник?", "Так", "Ні");
+                bool add = await DisplayAlert("Р”РѕРґР°С‚Рё?",
+                    $"{weight}Рі - С†Рµ {Math.Round(finalCals)} РєРєР°Р». Р”РѕРґР°С‚Рё РІ С‰РѕРґРµРЅРЅРёРє?", "РўР°Рє", "РќС–");
 
                 if (add)
                 {
@@ -151,8 +173,8 @@ namespace NutritionTrackerMAUI.Views
                     {
                         UserId = _user.Id,
                         Date = DateTime.Now,
-                        MealType = "З бази", 
-                        Name = $"{item.Name} ({weight}г)",
+                        MealType = "Р— Р±Р°Р·Рё",
+                        Name = $"{item.Name} ({weight}Рі)",
                         Calories = Math.Round(finalCals),
                         Protein = Math.Round(finalProt),
                         Fat = Math.Round(finalFat),
@@ -160,9 +182,7 @@ namespace NutritionTrackerMAUI.Views
                     };
 
                     await _db.AddFoodLogAsync(logEntry);
-
-                    await DisplayAlert("Готово", "Продукт додано до щоденника!", "OK");
-
+                    await DisplayAlert("Р“РѕС‚РѕРІРѕ", "РџСЂРѕРґСѓРєС‚ РґРѕРґР°РЅРѕ РґРѕ С‰РѕРґРµРЅРЅРёРєР°!", "OK");
                     await Navigation.PopAsync();
                 }
             }

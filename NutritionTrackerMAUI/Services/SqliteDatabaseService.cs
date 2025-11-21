@@ -28,6 +28,7 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<UserCurrentProgram>().Wait();
             _database.CreateTableAsync<FoodLogEntry>().Wait();
             _database.CreateTableAsync<FoodItem>().Wait();
+            _database.CreateTableAsync<UserDietarySettings>().Wait();
         }
 
         // ===============================
@@ -190,6 +191,25 @@ namespace NutritionTrackerMAUI.Services
             _database.DeleteAsync(item);
 
         // Метод для початкового наповнення (Сідінг бази)
+        public async Task<UserDietarySettings> GetDietarySettingsAsync(int userId)
+        {
+            var settings = await _database.Table<UserDietarySettings>()
+                                    .Where(s => s.UserId == userId)
+                                    .FirstOrDefaultAsync();
+
+            // Якщо налаштувань ще немає, створюємо дефолтні
+            if (settings == null)
+            {
+                settings = new UserDietarySettings { UserId = userId };
+                await _database.InsertAsync(settings);
+            }
+            return settings;
+        }
+
+        public Task<int> SaveDietarySettingsAsync(UserDietarySettings settings) =>
+            _database.UpdateAsync(settings);
+
+        // --- Оновлений Seeding (оновіть існуючий метод) ---
         public async Task SeedDatabaseAsync()
         {
             var count = await _database.Table<FoodItem>().CountAsync();
@@ -197,38 +217,41 @@ namespace NutritionTrackerMAUI.Services
             {
                 var initialFoods = new List<FoodItem>
         {
-            // Крупи
-            new FoodItem { Name = "Гречка (варена)", Category = "Крупи", Calories = 101, Protein = 3.6, Fat = 2.2, Carbs = 17.1 },
-            new FoodItem { Name = "Рис білий (варений)", Category = "Крупи", Calories = 116, Protein = 2.2, Fat = 0.5, Carbs = 24.9 },
-            new FoodItem { Name = "Вівсянка (на воді)", Category = "Крупи", Calories = 88, Protein = 3, Fat = 1.7, Carbs = 15 },
-
-            // М'ясо
-            new FoodItem { Name = "Куряче філе (варене)", Category = "М'ясо", Calories = 113, Protein = 23.6, Fat = 1.9, Carbs = 0.4 },
-            new FoodItem { Name = "Свинина (нежирна)", Category = "М'ясо", Calories = 160, Protein = 21, Fat = 8, Carbs = 0 },
-            new FoodItem { Name = "Яловичина", Category = "М'ясо", Calories = 187, Protein = 18.9, Fat = 12.4, Carbs = 0 },
-
-            // Молочні
-            new FoodItem { Name = "Яйце куряче (1 шт)", Category = "Молочні", Calories = 78, Protein = 6.3, Fat = 5.3, Carbs = 0.6 }, // Приблизно на 50г, але для бази краще на 100г:
-            new FoodItem { Name = "Яйце куряче (100г)", Category = "Молочні", Calories = 157, Protein = 12.7, Fat = 11.5, Carbs = 0.7 },
-            new FoodItem { Name = "Сир кисломолочний 5%", Category = "Молочні", Calories = 121, Protein = 17.2, Fat = 5, Carbs = 1.8 },
+            // --- Глютен ---
+            new FoodItem { Name = "Вівсянка", Category = "Крупи", Calories = 88, Protein = 3, Fat = 1.7, Carbs = 15, HasGluten = true },
+            new FoodItem { Name = "Макарони", Category = "Крупи", Calories = 157, Protein = 5.8, Fat = 0.9, Carbs = 30, HasGluten = true },
+            new FoodItem { Name = "Хліб білий", Category = "Крупи", Calories = 265, Protein = 9, Fat = 3.2, Carbs = 49, HasGluten = true },
             
-            // Овочі
+            // --- Без глютену ---
+            new FoodItem { Name = "Гречка", Category = "Крупи", Calories = 101, Protein = 3.6, Fat = 2.2, Carbs = 17.1, HasGluten = false },
+            new FoodItem { Name = "Рис білий", Category = "Крупи", Calories = 116, Protein = 2.2, Fat = 0.5, Carbs = 24.9, HasGluten = false },
+
+            // --- Лактоза ---
+            new FoodItem { Name = "Молоко 2.5%", Category = "Молочні", Calories = 52, Protein = 2.8, Fat = 2.5, Carbs = 4.7, HasLactose = true },
+            new FoodItem { Name = "Сир кисломолочний", Category = "Молочні", Calories = 121, Protein = 17.2, Fat = 5, Carbs = 1.8, HasLactose = true },
+            
+            // --- Горіхи ---
+            new FoodItem { Name = "Волоський горіх", Category = "Горіхи", Calories = 654, Protein = 15, Fat = 65, Carbs = 7, HasNuts = true },
+            new FoodItem { Name = "Арахіс", Category = "Горіхи", Calories = 567, Protein = 26, Fat = 49, Carbs = 16, HasNuts = true },
+
+            // --- Цукор / Фрукти ---
+            new FoodItem { Name = "Яблуко", Category = "Фрукти", Calories = 52, Protein = 0.3, Fat = 0.2, Carbs = 11.4, HasSugar = true },
+            new FoodItem { Name = "Банан", Category = "Фрукти", Calories = 96, Protein = 1.5, Fat = 0.5, Carbs = 21, HasSugar = true },
+
+            // --- М'ясо / Риба (Чисті) ---
+            new FoodItem { Name = "Куряче філе", Category = "М'ясо", Calories = 113, Protein = 23.6, Fat = 1.9, Carbs = 0.4 },
+            new FoodItem { Name = "Яловичина", Category = "М'ясо", Calories = 187, Protein = 18.9, Fat = 12.4, Carbs = 0 },
+            new FoodItem { Name = "Лосось (запечений)", Category = "Риба", Calories = 206, Protein = 22, Fat = 12, Carbs = 0 },
+            
+            // --- Овочі ---
             new FoodItem { Name = "Огірок", Category = "Овочі", Calories = 15, Protein = 0.8, Fat = 0.1, Carbs = 3 },
             new FoodItem { Name = "Помідор", Category = "Овочі", Calories = 20, Protein = 1.1, Fat = 0.2, Carbs = 3.7 },
-            new FoodItem { Name = "Картопля варена", Category = "Овочі", Calories = 82, Protein = 2, Fat = 0.4, Carbs = 16.7 },
-
-            // Фрукти
-            new FoodItem { Name = "Яблуко", Category = "Фрукти", Calories = 52, Protein = 0.3, Fat = 0.2, Carbs = 11.4 },
-            new FoodItem { Name = "Банан", Category = "Фрукти", Calories = 96, Protein = 1.5, Fat = 0.5, Carbs = 21 },
-
-            // Риба
-            new FoodItem { Name = "Лосось (запечений)", Category = "Риба", Calories = 206, Protein = 22, Fat = 12, Carbs = 0 },
-            new FoodItem { Name = "Хек (варений)", Category = "Риба", Calories = 78, Protein = 16.6, Fat = 1.3, Carbs = 0 }
+            new FoodItem { Name = "Картопля", Category = "Овочі", Calories = 82, Protein = 2, Fat = 0.4, Carbs = 16.7 }
         };
 
                 await _database.InsertAllAsync(initialFoods);
             }
         }
     }
-    }
+        }
     
