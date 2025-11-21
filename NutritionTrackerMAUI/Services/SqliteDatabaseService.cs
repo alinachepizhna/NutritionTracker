@@ -26,7 +26,8 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<TrainingPlan>().Wait();
             _database.CreateTableAsync<UserWorkoutProgram>().Wait();
             _database.CreateTableAsync<UserCurrentProgram>().Wait();
-
+            _database.CreateTableAsync<FoodLogEntry>().Wait();
+            _database.CreateTableAsync<FoodItem>().Wait();
         }
 
         // ===============================
@@ -165,5 +166,69 @@ namespace NutritionTrackerMAUI.Services
                 await _database.UpdateAsync(currentProgram);
             }
         }
+        public Task<int> UpdateFoodLogAsync(FoodLogEntry entry) => _database.UpdateAsync(entry);
+        public Task<int> DeleteFoodLogAsync(FoodLogEntry entry) => _database.DeleteAsync(entry);
+        public Task<int> AddFoodLogAsync(FoodLogEntry entry) => _database.InsertAsync(entry);
+
+        public Task<List<FoodLogEntry>> GetFoodLogsAsync(int userId, DateTime date)
+        {
+            // Отримуємо записи тільки за конкретну дату
+            var startOfDay = date.Date;
+            var endOfDay = date.Date.AddDays(1).AddTicks(-1);
+
+            return _database.Table<FoodLogEntry>()
+                            .Where(f => f.UserId == userId && f.Date >= startOfDay && f.Date <= endOfDay)
+                            .ToListAsync();
+        }
+        public Task<List<FoodItem>> GetAllFoodItemsAsync() =>
+    _database.Table<FoodItem>().ToListAsync();
+
+        public Task<int> AddFoodItemAsync(FoodItem item) =>
+            _database.InsertAsync(item);
+
+        public Task<int> DeleteFoodItemAsync(FoodItem item) =>
+            _database.DeleteAsync(item);
+
+        // Метод для початкового наповнення (Сідінг бази)
+        public async Task SeedDatabaseAsync()
+        {
+            var count = await _database.Table<FoodItem>().CountAsync();
+            if (count == 0)
+            {
+                var initialFoods = new List<FoodItem>
+        {
+            // Крупи
+            new FoodItem { Name = "Гречка (варена)", Category = "Крупи", Calories = 101, Protein = 3.6, Fat = 2.2, Carbs = 17.1 },
+            new FoodItem { Name = "Рис білий (варений)", Category = "Крупи", Calories = 116, Protein = 2.2, Fat = 0.5, Carbs = 24.9 },
+            new FoodItem { Name = "Вівсянка (на воді)", Category = "Крупи", Calories = 88, Protein = 3, Fat = 1.7, Carbs = 15 },
+
+            // М'ясо
+            new FoodItem { Name = "Куряче філе (варене)", Category = "М'ясо", Calories = 113, Protein = 23.6, Fat = 1.9, Carbs = 0.4 },
+            new FoodItem { Name = "Свинина (нежирна)", Category = "М'ясо", Calories = 160, Protein = 21, Fat = 8, Carbs = 0 },
+            new FoodItem { Name = "Яловичина", Category = "М'ясо", Calories = 187, Protein = 18.9, Fat = 12.4, Carbs = 0 },
+
+            // Молочні
+            new FoodItem { Name = "Яйце куряче (1 шт)", Category = "Молочні", Calories = 78, Protein = 6.3, Fat = 5.3, Carbs = 0.6 }, // Приблизно на 50г, але для бази краще на 100г:
+            new FoodItem { Name = "Яйце куряче (100г)", Category = "Молочні", Calories = 157, Protein = 12.7, Fat = 11.5, Carbs = 0.7 },
+            new FoodItem { Name = "Сир кисломолочний 5%", Category = "Молочні", Calories = 121, Protein = 17.2, Fat = 5, Carbs = 1.8 },
+            
+            // Овочі
+            new FoodItem { Name = "Огірок", Category = "Овочі", Calories = 15, Protein = 0.8, Fat = 0.1, Carbs = 3 },
+            new FoodItem { Name = "Помідор", Category = "Овочі", Calories = 20, Protein = 1.1, Fat = 0.2, Carbs = 3.7 },
+            new FoodItem { Name = "Картопля варена", Category = "Овочі", Calories = 82, Protein = 2, Fat = 0.4, Carbs = 16.7 },
+
+            // Фрукти
+            new FoodItem { Name = "Яблуко", Category = "Фрукти", Calories = 52, Protein = 0.3, Fat = 0.2, Carbs = 11.4 },
+            new FoodItem { Name = "Банан", Category = "Фрукти", Calories = 96, Protein = 1.5, Fat = 0.5, Carbs = 21 },
+
+            // Риба
+            new FoodItem { Name = "Лосось (запечений)", Category = "Риба", Calories = 206, Protein = 22, Fat = 12, Carbs = 0 },
+            new FoodItem { Name = "Хек (варений)", Category = "Риба", Calories = 78, Protein = 16.6, Fat = 1.3, Carbs = 0 }
+        };
+
+                await _database.InsertAllAsync(initialFoods);
+            }
+        }
     }
     }
+    

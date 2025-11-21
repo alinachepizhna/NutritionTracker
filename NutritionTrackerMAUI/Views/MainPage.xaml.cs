@@ -45,6 +45,12 @@ namespace NutritionTrackerMAUI.Views
                 }
                 await Task.CompletedTask;
             };
+            // У конструкторі MainPage:
+            Children.Add(new FoodDiaryPage(_user, _db)
+            {
+                Title = "Щоденник",
+                IconImageSource = "apple.png" // Переконайтесь, що іконка є, або видаліть цю властивість
+            });
         }
 
         protected override async void OnAppearing()

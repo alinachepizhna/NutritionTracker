@@ -1,5 +1,5 @@
 using SQLite;
-
+using System;
 namespace NutritionTrackerMAUI.Models
 {
     public class AnthropometricData
@@ -14,7 +14,7 @@ namespace NutritionTrackerMAUI.Models
         public int Age { get; set; }       // Вік
         public string Gender { get; set; } = string.Empty; // Стать
         public string MeasurementSystem { get; set; } = "Metric"; // "Metric" або "Imperial"
-
+        public DateTime Date { get; set; } = DateTime.Now;
         public AnthropometricData() { }
     }
 }

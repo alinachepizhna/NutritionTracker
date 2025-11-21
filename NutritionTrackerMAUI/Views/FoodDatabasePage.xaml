@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.FoodDatabasePage"
+             Title="База продуктів"
+             BackgroundColor="#F0F0F5">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        
+        <SearchBar x:Name="ProductSearch" 
+                   Placeholder="Пошук продукту..." 
+                   TextChanged="OnSearchTextChanged"
+                   BackgroundColor="White"
+                   Margin="10,10,10,0"/>
+
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="10">
+            <HorizontalStackLayout Spacing="8" x:Name="CategoryStack">
+                </HorizontalStackLayout>
+        </ScrollView>
+
+        <CollectionView x:Name="ProductsCollection" Grid.Row="2" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="10,5" Padding="10" CornerRadius="10" HasShadow="True" BackgroundColor="White">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProductTapped" CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16"/>
+                                <Label Text="{Binding Category}" FontSize="12" TextColor="Gray"/>
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                                <Label Text="{Binding Calories, StringFormat='{0} ккал/100г'}" 
+                                       FontAttributes="Bold" TextColor="#D32F2F"/>
+                                <Label Text="{Binding Protein, StringFormat='Б:{0} Ж:{1} В:{2}'}" 
+                                       FontSize="10" TextColor="Black"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="2"
+                Text="+"
+                FontSize="30"
+                WidthRequest="60"
+                HeightRequest="60"
+                CornerRadius="30"
+                BackgroundColor="#D32F2F"
+                TextColor="White"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="20"
+                Clicked="OnAddCustomProductClicked"/>
+    </Grid>
+</ContentPage>

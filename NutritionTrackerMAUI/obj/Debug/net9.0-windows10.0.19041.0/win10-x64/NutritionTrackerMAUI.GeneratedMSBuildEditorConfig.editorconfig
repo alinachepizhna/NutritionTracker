@@ -58,6 +58,18 @@ build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Resou
 build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
 build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Styles.xaml
 
+[D:/курсач/XamarinProjects/NutritionTracker/NutritionTrackerMAUI/Views/FoodDatabasePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Views.FoodDatabasePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\FoodDatabasePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\FoodDatabasePage.xaml
+
+[D:/курсач/XamarinProjects/NutritionTracker/NutritionTrackerMAUI/Views/FoodDiaryPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Views.FoodDiaryPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\FoodDiaryPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\FoodDiaryPage.xaml
+
 [D:/курсач/XamarinProjects/NutritionTracker/NutritionTrackerMAUI/Views/GoalPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Views.GoalPage.xaml
