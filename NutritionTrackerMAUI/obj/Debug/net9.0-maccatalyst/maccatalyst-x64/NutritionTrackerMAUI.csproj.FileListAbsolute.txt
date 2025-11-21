@@ -1,6 +1,7 @@
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.runtimeconfig.json
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\NutritionTrackerMAUI.pdb
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microcharts.Maui.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.Data.Sqlite.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.Extensions.Configuration.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.Extensions.Configuration.Abstractions.dll
@@ -16,6 +17,10 @@ D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.Maui.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.Maui.Essentials.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.Maui.Graphics.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SkiaSharp.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SkiaSharp.Views.iOS.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SkiaSharp.Views.Maui.Controls.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SkiaSharp.Views.Maui.Core.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SQLite-net.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SQLitePCLRaw.batteries_v2.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\SQLitePCLRaw.core.dll
@@ -54,6 +59,7 @@ D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\zh-HK\Microsoft.Maui.Controls.resources.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\zh-Hans\Microsoft.Maui.Controls.resources.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\zh-Hant\Microsoft.Maui.Controls.resources.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\libSkiaSharp.framework.zip
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\libe_sqlite3.dylib
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.CSharp.dll
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\bin\Debug\net9.0-maccatalyst\maccatalyst-x64\Microsoft.VisualBasic.Core.dll

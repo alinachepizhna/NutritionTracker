@@ -50,7 +50,6 @@ namespace NutritionTrackerMAUI.Views
             _plannerPage = new TrainingPlannerPage(_user, _db)
             {
                 Title = "Планування",
-                IconImageSource = "dumbbell.png"
             };
             Children.Add(_plannerPage);
 
@@ -67,13 +66,15 @@ namespace NutritionTrackerMAUI.Views
             Children.Add(new FoodDiaryPage(_user, _db)
             {
                 Title = "Щоденник",
-                IconImageSource = "apple.png"
             });
 
             Children.Add(new HabitsPage(_user, _db)
             {
                 Title = "Звички",
-                IconImageSource = "habit.png"
+            });
+            Children.Add(new StatisticsPage(_user, _db)
+            {
+                Title = "Аналітика",
             });
         }
 

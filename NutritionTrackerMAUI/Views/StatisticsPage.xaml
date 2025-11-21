@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:micro="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             x:Class="NutritionTrackerMAUI.Views.StatisticsPage"
+             Title="Аналітика"
+             BackgroundColor="#F5F5F7">
+	<ScrollView>
+		<VerticalStackLayout Padding="20" Spacing="25">
+
+			<Border StrokeShape="RoundRectangle 20" StrokeThickness="0" BackgroundColor="#E0E0E0" HeightRequest="45" HorizontalOptions="Center" WidthRequest="250">
+				<Grid ColumnDefinitions="*, *">
+					<Button x:Name="BtnWeek" Text="Тиждень" Clicked="OnWeekClicked" FontSize="13" FontAttributes="Bold" BackgroundColor="White" TextColor="Black" CornerRadius="20" Margin="2" Padding="0"/>
+					<Button x:Name="BtnMonth" Text="Місяць" Grid.Column="1" Clicked="OnMonthClicked" FontSize="13" FontAttributes="Bold" BackgroundColor="Transparent" TextColor="Gray" CornerRadius="20" Margin="2" Padding="0"/>
+				</Grid>
+			</Border>
+
+			<Frame CornerRadius="20" HasShadow="True" Padding="20" BorderColor="Transparent" BackgroundColor="White">
+				<Grid ColumnDefinitions="*, Auto">
+					<VerticalStackLayout VerticalOptions="Center" Spacing="5">
+						<HorizontalStackLayout Spacing="5">
+							<Label Text="🔥" FontSize="20"/>
+							<Label Text="Калорії" FontAttributes="Bold" FontSize="18" TextColor="#333"/>
+						</HorizontalStackLayout>
+						<Label Text="Середнє споживання" TextColor="Gray" FontSize="12"/>
+						<Label x:Name="AvgCaloriesLabel" Text="0 / 0" FontAttributes="Bold" FontSize="16" TextColor="#333" Margin="0,5,0,0"/>
+						<Label x:Name="CaloriesStatusLabel" Text="Норма" TextColor="#4CAF50" FontSize="12" FontAttributes="Bold"/>
+					</VerticalStackLayout>
+
+					<Grid Grid.Column="1" WidthRequest="120" HeightRequest="120">
+						<micro:ChartView x:Name="CaloriesChart" BackgroundColor="Transparent"/>
+						<Label x:Name="CaloriesPercentLabel" Text="0%" FontSize="20" FontAttributes="Bold" TextColor="#333" HorizontalOptions="Center" VerticalOptions="Center"/>
+					</Grid>
+				</Grid>
+			</Frame>
+
+			<Frame CornerRadius="20" HasShadow="True" Padding="20" BorderColor="Transparent" BackgroundColor="White">
+				<Grid ColumnDefinitions="*, Auto">
+					<VerticalStackLayout VerticalOptions="Center" Spacing="5">
+						<HorizontalStackLayout Spacing="5">
+							<Label Text="👣" FontSize="20"/>
+							<Label Text="Активність" FontAttributes="Bold" FontSize="18" TextColor="#333"/>
+						</HorizontalStackLayout>
+						<Label Text="Середнє за день" TextColor="Gray" FontSize="12"/>
+						<Label x:Name="TotalStepsLabel" Text="0 кроків" FontAttributes="Bold" FontSize="16" TextColor="#333" Margin="0,5,0,0"/>
+					</VerticalStackLayout>
+
+					<Grid Grid.Column="1" WidthRequest="120" HeightRequest="120">
+						<micro:ChartView x:Name="StepsChart" BackgroundColor="Transparent"/>
+						<Label x:Name="StepsPercentLabel" Text="0%" FontSize="20" FontAttributes="Bold" TextColor="#333" HorizontalOptions="Center" VerticalOptions="Center"/>
+					</Grid>
+				</Grid>
+			</Frame>
+
+			<Border StrokeShape="RoundRectangle 20" StrokeThickness="0" BackgroundColor="#4CAF50" Padding="20">
+				<Border.Shadow>
+					<Shadow Brush="Black" Offset="0,5" Radius="10" Opacity="0.2"/>
+				</Border.Shadow>
+				<Grid ColumnDefinitions="*, Auto">
+					<VerticalStackLayout VerticalOptions="Center" Spacing="5">
+						<Label Text="✨ Дисципліна" FontAttributes="Bold" FontSize="18" TextColor="White"/>
+						<Label Text="Успішність виконання" TextColor="#E8F5E9" FontSize="12"/>
+					</VerticalStackLayout>
+					<Grid Grid.Column="1" WidthRequest="120" HeightRequest="120">
+						<micro:ChartView x:Name="HabitsChart" BackgroundColor="Transparent"/>
+						<Label x:Name="HabitPercentLabel" Text="0%" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+					</Grid>
+				</Grid>
+			</Border>
+
+			<BoxView HeightRequest="20" Color="Transparent"/>
+		</VerticalStackLayout>
+	</ScrollView>
+</ContentPage>

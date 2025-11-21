@@ -419,6 +419,41 @@ namespace NutritionTrackerMAUI.Services
                 await _database.InsertAsync(activity);
             }
         }
+        public Task<List<FoodLogEntry>> GetFoodLogsRangeAsync(int userId, DateTime start, DateTime end)
+        {
+            return _database.Table<FoodLogEntry>()
+                            .Where(f => f.UserId == userId && f.Date >= start && f.Date <= end)
+                            .ToListAsync();
+        }
+
+        // Отримати активність за період
+        public Task<List<DailyActivity>> GetActivityRangeAsync(int userId, DateTime start, DateTime end)
+        {
+            return _database.Table<DailyActivity>()
+                            .Where(a => a.UserId == userId && a.Date >= start && a.Date <= end)
+                            .ToListAsync();
+        }
+
+        // Отримати кількість виконаних звичок за період
+        public async Task<int> GetCompletedHabitsCountAsync(int userId, DateTime start, DateTime end)
+        {
+            // Отримуємо ID звичок користувача
+            var userHabits = await GetUserHabitsAsync(userId);
+            var habitIds = userHabits.Select(h => h.Id).ToList();
+
+            if (!habitIds.Any()) return 0;
+
+            // Рахуємо виконання
+            int count = 0;
+            foreach (var hId in habitIds)
+            {
+                var logs = await _database.Table<HabitLog>()
+                                          .Where(l => l.HabitId == hId && l.Date >= start && l.Date <= end && l.IsCompleted)
+                                          .CountAsync();
+                count += logs;
+            }
+            return count;
+        }
     }
     }
         
