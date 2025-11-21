@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NutritionTrackerMAUI</name>
+    </assembly>
+    <members>
+        <member name="M:NutritionTrackerMAUI.Services.CalendarGenerator.GenerateMonthlyCalendar(System.Int32,System.Int32,System.Collections.Generic.List{System.ValueTuple{System.DateTime,System.String}})">
+            <summary>
+            Генерує календар на вказаний місяць з відображенням типів тренувань та кольорів.
+            </summary>
+        </member>
+        <member name="T:NutritionTrackerMAUI.Resource">
+            <summary>
+            Android Resource Designer class.
+            Exposes the Android Resource designer assembly into the project Namespace.
+            </summary>
+        </member>
+    </members>
+</doc>

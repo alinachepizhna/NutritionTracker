@@ -1,7 +1,6 @@
-using NutritionTrackerMAUI.Models;
+п»їusing NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System.Collections.ObjectModel;
-using System.Security.Cryptography;
 
 namespace NutritionTrackerMAUI.Views
 {
@@ -9,135 +8,167 @@ namespace NutritionTrackerMAUI.Views
     {
         private readonly User _user;
         private readonly SqliteDatabaseService _db;
-        public ObservableCollection<FoodLogEntry> TodaysFood { get; set; } = new();
-        private async void OnOpenDatabaseClicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new FoodDatabasePage(_user, _db));
-        }
+        private DateTime _currentDate = DateTime.Today;
+
+        public ObservableCollection<FoodLogEntry> DailyLogs { get; set; } = new();
+
         public FoodDiaryPage(User user, SqliteDatabaseService db)
         {
             InitializeComponent();
             _user = user;
             _db = db;
-            FoodCollection.ItemsSource = TodaysFood;
+
+            FoodCollection.ItemsSource = DailyLogs;
+            LogDatePicker.Date = _currentDate;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await LoadDataAsync();
+            await LoadLogsForDate(_currentDate);
         }
 
-        private async Task LoadDataAsync()
+        private async Task LoadLogsForDate(DateTime date)
         {
-            var logs = await _db.GetFoodLogsAsync(_user.Id, DateTime.Today);
-            TodaysFood.Clear();
-            foreach (var log in logs) TodaysFood.Add(log);
+            DailyLogs.Clear();
+            var logs = await _db.GetFoodLogsAsync(_user.Id, date);
+
+            foreach (var log in logs) DailyLogs.Add(log);
+
+            double currentCals = logs.Sum(x => x.Calories);
+            double currentProt = logs.Sum(x => x.Protein);
+            double currentFat = logs.Sum(x => x.Fat);
+            double currentCarbs = logs.Sum(x => x.Carbs);
 
             var anthropometry = (await _db.GetUserDataAsync(_user.Id)).OrderByDescending(a => a.Date).FirstOrDefault();
             var (goal, strategy) = await _db.GetLatestGoalWithStrategyAsync(_user.Id);
-
             var targets = NutritionCalculator.CalculateTargets(_user, anthropometry, goal, strategy);
 
-            double eatenCals = logs.Sum(x => x.Calories);
-            double eatenProt = logs.Sum(x => x.Protein);
-            double eatenFat = logs.Sum(x => x.Fat);
-            double eatenCarbs = logs.Sum(x => x.Carbs);
+            CaloriesLabel.Text = $"{currentCals} / {targets.Calories} РєРєР°Р»";
+            CaloriesProgress.Progress = targets.Calories > 0 ? currentCals / targets.Calories : 0;
+            ProteinLabel.Text = $"{currentProt:F0} / {targets.Protein:F0}Рі";
+            FatLabel.Text = $"{currentFat:F0} / {targets.Fat:F0}Рі";
+            CarbsLabel.Text = $"{currentCarbs:F0} / {targets.Carbs:F0}Рі";
+        }
 
-            CaloriesLabel.Text = $"{eatenCals} / {targets.Calories} ккал";
-            CaloriesProgress.Progress = targets.Calories > 0 ? eatenCals / targets.Calories : 0;
+        private async void OnDateSelected(object sender, DateChangedEventArgs e)
+        {
+            _currentDate = e.NewDate;
+            await LoadLogsForDate(_currentDate);
+        }
+        private void OnPrevDayClicked(object sender, EventArgs e) => LogDatePicker.Date = LogDatePicker.Date.AddDays(-1);
+        private void OnNextDayClicked(object sender, EventArgs e) => LogDatePicker.Date = LogDatePicker.Date.AddDays(1);
 
-            ProteinLabel.Text = $"{eatenProt} / {targets.Protein}г";
-            FatLabel.Text = $"{eatenFat} / {targets.Fat}г";
-            CarbsLabel.Text = $"{eatenCarbs} / {targets.Carbs}г";
+        // --- Р”Р†Р‡ ---
+        private async void OnOpenDatabaseClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new FoodDatabasePage(_user, _db));
         }
 
         private async void OnAddFoodClicked(object sender, EventArgs e)
         {
-            string name = await DisplayPromptAsync("Додати їжу", "Назва продукту:");
+            string name = await DisplayPromptAsync("Р”РѕРґР°С‚Рё С—Р¶Сѓ", "РќР°Р·РІР° РїСЂРѕРґСѓРєС‚Сѓ:");
             if (string.IsNullOrWhiteSpace(name)) return;
 
-            string calsStr = await DisplayPromptAsync("Калорії", "Кількість ккал:", keyboard: Keyboard.Numeric);
+            string calsStr = await DisplayPromptAsync("РљР°Р»РѕСЂС–С—", "РљС–Р»СЊРєС–СЃС‚СЊ РєРєР°Р»:", keyboard: Keyboard.Numeric);
             if (!double.TryParse(calsStr, out double cals)) return;
+
+            string mealType = await DisplayActionSheet("РћР±РµСЂС–С‚СЊ РїСЂРёР№РѕРј С—Р¶С–", "РЎРєР°СЃСѓРІР°С‚Рё", null, "РЎРЅС–РґР°РЅРѕРє", "РћР±С–Рґ", "Р’РµС‡РµСЂСЏ", "РџРµСЂРµРєСѓСЃ");
+            if (mealType == "РЎРєР°СЃСѓРІР°С‚Рё" || mealType == null) return;
+
             var newLog = new FoodLogEntry
             {
                 UserId = _user.Id,
-                Date = DateTime.Now,
-                MealType = "Перекус", 
+                Date = _currentDate,
+                MealType = mealType,
                 Name = name,
                 Calories = cals,
-                Protein = cals * 0.07, 
+                Protein = cals * 0.07,
                 Fat = cals * 0.03,
                 Carbs = cals * 0.10
             };
 
             await _db.AddFoodLogAsync(newLog);
-            await LoadDataAsync(); 
+            await LoadLogsForDate(_currentDate);
         }
-        private async void OnFoodItemTapped(object sender, TappedEventArgs e)
+
+        private async void OnCollectionViewSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.Parameter is not FoodLogEntry selectedEntry) return;
+            var selectedEntry = e.CurrentSelection.FirstOrDefault() as FoodLogEntry;
+            if (selectedEntry == null) return;
+
+            if (sender is CollectionView cv) cv.SelectedItem = null;
 
             string action = await DisplayActionSheet(
-                $"Меню: {selectedEntry.Name}",
-                "Скасувати",
-                "Видалити",
-                "Редагувати назву",
-                "Редагувати калорії");
+                $"РњРµРЅСЋ: {selectedEntry.Name}",
+                "РЎРєР°СЃСѓРІР°С‚Рё",
+                "Р’РёРґР°Р»РёС‚Рё",
+                "Р—РјС–РЅРёС‚Рё РїСЂРёР№РѕРј С—Р¶С–",
+                "Р РµРґР°РіСѓРІР°С‚Рё РЅР°Р·РІСѓ",
+                "Р РµРґР°РіСѓРІР°С‚Рё РєР°Р»РѕСЂС–С—");
 
             switch (action)
             {
-                case "Видалити":
-                    await DeleteEntryAsync(selectedEntry);
-                    break;
-                case "Редагувати назву":
-                    await EditEntryNameAsync(selectedEntry);
-                    break;
-                case "Редагувати калорії":
-                    await EditEntryCaloriesAsync(selectedEntry);
-                    break;
+                case "Р’РёРґР°Р»РёС‚Рё": await DeleteEntryAsync(selectedEntry); break;
+                case "Р—РјС–РЅРёС‚Рё РїСЂРёР№РѕРј С—Р¶С–": await EditEntryMealTypeAsync(selectedEntry); break;
+                case "Р РµРґР°РіСѓРІР°С‚Рё РЅР°Р·РІСѓ": await EditEntryNameAsync(selectedEntry); break;
+                case "Р РµРґР°РіСѓРІР°С‚Рё РєР°Р»РѕСЂС–С—": await EditEntryCaloriesAsync(selectedEntry); break;
+            }
+        }
+
+        private async void OnDeleteEntryClicked(object sender, EventArgs e)
+        {
+            if (sender is SwipeItem swipeItem && swipeItem.CommandParameter is FoodLogEntry entry)
+            {
+                await DeleteEntryAsync(entry);
             }
         }
 
         private async Task DeleteEntryAsync(FoodLogEntry entry)
         {
-            bool confirm = await DisplayAlert("Видалення", $"Видалити '{entry.Name}'?", "Так", "Ні");
-            if (!confirm) return;
+            bool confirm = await DisplayAlert("Р’РёРґР°Р»РµРЅРЅСЏ", $"Р’РёРґР°Р»РёС‚Рё '{entry.Name}'?", "РўР°Рє", "РќС–");
+            if (confirm)
+            {
+                await _db.DeleteFoodLogAsync(entry);
+                await LoadLogsForDate(_currentDate);
+            }
+        }
 
-            await _db.DeleteFoodLogAsync(entry);
-
-            // Оновлюємо список та прогрес-бари
-            await LoadDataAsync();
+        private async Task EditEntryMealTypeAsync(FoodLogEntry entry)
+        {
+            string newMeal = await DisplayActionSheet("РџРµСЂРµРЅРµСЃС‚Рё РІ:", "РЎРєР°СЃСѓРІР°С‚Рё", null, "РЎРЅС–РґР°РЅРѕРє", "РћР±С–Рґ", "Р’РµС‡РµСЂСЏ", "РџРµСЂРµРєСѓСЃ");
+            if (newMeal == "РЎРєР°СЃСѓРІР°С‚Рё" || newMeal == null || newMeal == entry.MealType) return;
+            entry.MealType = newMeal;
+            await _db.UpdateFoodLogAsync(entry);
+            await LoadLogsForDate(_currentDate);
         }
 
         private async Task EditEntryNameAsync(FoodLogEntry entry)
         {
-            string newName = await DisplayPromptAsync("Редагування", "Нова назва продукту:", initialValue: entry.Name);
+            string newName = await DisplayPromptAsync("Р РµРґР°РіСѓРІР°РЅРЅСЏ", "РќРѕРІР° РЅР°Р·РІР°:", initialValue: entry.Name);
+            if (!string.IsNullOrWhiteSpace(newName))
+            {
+                entry.Name = newName;
+                await _db.UpdateFoodLogAsync(entry);
+                await LoadLogsForDate(_currentDate);
+            }
+        }
 
-            if (string.IsNullOrWhiteSpace(newName) || newName == entry.Name) return;
-
-            entry.Name = newName;
-            await _db.UpdateFoodLogAsync(entry);
-            await LoadDataAsync();
+        private async Task EditEntryCaloriesAsync(FoodLogEntry entry)
+        {
+            string newCalsStr = await DisplayPromptAsync("Р РµРґР°РіСѓРІР°РЅРЅСЏ", "РљРєР°Р»:", initialValue: entry.Calories.ToString(), keyboard: Keyboard.Numeric);
+            if (double.TryParse(newCalsStr, out double newCals))
+            {
+                entry.Calories = newCals;
+                entry.Protein = newCals * 0.07; entry.Fat = newCals * 0.03; entry.Carbs = newCals * 0.10;
+                await _db.UpdateFoodLogAsync(entry);
+                await LoadLogsForDate(_currentDate);
+            }
         }
 
         private async void OnDietarySettingsClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new DietarySettingsPage(_user, _db));
-        }
-        private async Task EditEntryCaloriesAsync(FoodLogEntry entry)
-        {
-            string newCalsStr = await DisplayPromptAsync("Редагування", "Нова калорійність:",
-                                                         initialValue: entry.Calories.ToString(),
-                                                         keyboard: Keyboard.Numeric);
-
-            if (!double.TryParse(newCalsStr, out double newCals)) return;
-            entry.Calories = newCals;
-            entry.Protein = newCals * 0.07;
-            entry.Fat = newCals * 0.03;
-            entry.Carbs = newCals * 0.10;
-            await _db.UpdateFoodLogAsync(entry);
-            await LoadDataAsync();
         }
     }
 }
