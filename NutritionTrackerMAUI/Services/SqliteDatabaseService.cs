@@ -18,7 +18,6 @@ namespace NutritionTrackerMAUI.Services
 
             _database = new SQLiteAsyncConnection(dbPath);
 
-            // --- Створення таблиць ---
             _database.CreateTableAsync<User>().Wait();
             _database.CreateTableAsync<AnthropometricData>().Wait();
             _database.CreateTableAsync<Strategy>().Wait(); // Таблиця стратегій
@@ -33,6 +32,8 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<DishIngredient>().Wait();
             _database.CreateTableAsync<Habit>().Wait();
             _database.CreateTableAsync<HabitLog>().Wait();
+            _database.CreateTableAsync<DailyActivity>().Wait();
+
         }
 
         // ===============================
@@ -389,6 +390,34 @@ namespace NutritionTrackerMAUI.Services
             }
 
             return streak;
+        }
+        // ===============================
+        // 🏃‍♂️ --- АКТИВНІСТЬ (Smart Coach) ---
+        // ===============================
+
+        // Отримати активність за конкретну дату
+        public Task<DailyActivity?> GetActivityForDateAsync(int userId, DateTime date)
+        {
+            // Важливо порівнювати тільки дату без часу
+            var cleanDate = date.Date;
+            return _database.Table<DailyActivity>()
+                            .Where(a => a.UserId == userId && a.Date == cleanDate)
+                            .FirstOrDefaultAsync();
+        }
+
+        // Зберегти або оновити активність
+        public async Task SaveActivityAsync(DailyActivity activity)
+        {
+            if (activity.Id != 0)
+            {
+                // Якщо ID існує, значить запис вже є в базі -> оновлюємо
+                await _database.UpdateAsync(activity);
+            }
+            else
+            {
+                // Якщо ID == 0, це новий запис -> створюємо
+                await _database.InsertAsync(activity);
+            }
         }
     }
     }
