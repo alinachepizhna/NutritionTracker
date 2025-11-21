@@ -31,6 +31,8 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<UserDietarySettings>().Wait();
             _database.CreateTableAsync<Dish>().Wait();
             _database.CreateTableAsync<DishIngredient>().Wait();
+            _database.CreateTableAsync<Habit>().Wait();
+            _database.CreateTableAsync<HabitLog>().Wait();
         }
 
         // ===============================
@@ -277,6 +279,118 @@ namespace NutritionTrackerMAUI.Services
                 await _database.InsertAllAsync(initialFoods);
             }
         }
-    }
+        // --- ЗВИЧКИ ---
+
+        public Task<List<Habit>> GetUserHabitsAsync(int userId) =>
+            _database.Table<Habit>().Where(h => h.UserId == userId).ToListAsync();
+
+        public Task<int> SaveHabitAsync(Habit habit) => _database.InsertAsync(habit);
+
+        public Task<int> DeleteHabitAsync(Habit habit)
+        {
+            // Видаляємо і історію
+            var logs = _database.Table<HabitLog>().Where(l => l.HabitId == habit.Id).ToListAsync().Result;
+            foreach (var log in logs) _database.DeleteAsync(log);
+            return _database.DeleteAsync(habit);
         }
+
+        // Перевірити, чи виконана звичка сьогодні
+        public async Task<bool> IsHabitCompletedTodayAsync(int habitId)
+        {
+            var today = DateTime.Today;
+            var log = await _database.Table<HabitLog>()
+                                     .Where(l => l.HabitId == habitId && l.Date == today)
+                                     .FirstOrDefaultAsync();
+            return log != null && log.IsCompleted;
+        }
+
+        // Перемикач виконання (Toggle)
+        public async Task ToggleHabitAsync(int habitId, DateTime date)
+        {
+            var cleanDate = date.Date;
+            var existingLog = await _database.Table<HabitLog>()
+                                             .Where(l => l.HabitId == habitId && l.Date == cleanDate)
+                                             .FirstOrDefaultAsync();
+
+            if (existingLog != null)
+            {
+                // Якщо вже було - видаляємо (зняти галочку)
+                await _database.DeleteAsync(existingLog);
+            }
+            else
+            {
+                // Якщо не було - додаємо
+                await _database.InsertAsync(new HabitLog
+                {
+                    HabitId = habitId,
+                    Date = cleanDate,
+                    IsCompleted = true
+                });
+            }
+        }
+
+        public async Task<int> GetHabitStreakAsync(int habitId)
+        {
+            // Отримуємо саму звичку, щоб знати її графік
+            var habit = await _database.Table<Habit>().Where(h => h.Id == habitId).FirstOrDefaultAsync();
+            if (habit == null) return 0;
+
+            // Отримуємо всі записи виконання
+            var logs = await _database.Table<HabitLog>()
+                                      .Where(l => l.HabitId == habitId)
+                                      .OrderByDescending(l => l.Date)
+                                      .ToListAsync();
+
+            int streak = 0;
+            DateTime checkDate = DateTime.Today;
+
+            // Парсимо дні виконання (якщо це не "Щодня")
+            List<DayOfWeek> allowedDays = new List<DayOfWeek>();
+            if (!string.IsNullOrEmpty(habit.TargetDays))
+            {
+                foreach (var dayStr in habit.TargetDays.Split(','))
+                {
+                    if (Enum.TryParse(dayStr, out DayOfWeek day)) allowedDays.Add(day);
+                }
+            }
+
+            // Перевіряємо 365 днів назад (більше року серії навряд чи треба рахувати миттєво)
+            for (int i = 0; i < 365; i++)
+            {
+                // 1. Якщо звичка має графік, і checkDate не входить в графік -> пропускаємо цей день, серію НЕ збиваємо
+                if (habit.FrequencyType == 2 && allowedDays.Count > 0 && !allowedDays.Contains(checkDate.DayOfWeek))
+                {
+                    checkDate = checkDate.AddDays(-1);
+                    continue;
+                }
+
+                // 2. Шукаємо, чи було виконання в цей день
+                bool isDone = logs.Any(l => l.Date.Date == checkDate.Date);
+
+                if (isDone)
+                {
+                    streak++;
+                }
+                else
+                {
+                    // Якщо це СЬОГОДНІ і ми ще не зробили -> серія не переривається, вона просто ще не збільшилась
+                    if (checkDate.Date == DateTime.Today)
+                    {
+                        // нічого не робимо, йдемо перевіряти вчора
+                    }
+                    else
+                    {
+                        // Якщо це минулий день і ми пропустили -> кінець серії
+                        break;
+                    }
+                }
+
+                checkDate = checkDate.AddDays(-1);
+            }
+
+            return streak;
+        }
+    }
+    }
+        
     

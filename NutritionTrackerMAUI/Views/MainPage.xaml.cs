@@ -51,6 +51,11 @@ namespace NutritionTrackerMAUI.Views
                 Title = "Щоденник",
                 IconImageSource = "apple.png" // Переконайтесь, що іконка є, або видаліть цю властивість
             });
+            Children.Add(new HabitsPage(_user, _db)
+            {
+                Title = "Звички",
+                IconImageSource = "habit.png" // Переконайтесь, що у вас є іконка або приберіть цей рядок
+            });
         }
 
         protected override async void OnAppearing()

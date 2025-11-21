@@ -84,6 +84,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Views
 build_metadata.AdditionalFiles.TargetPath = Views\GoalPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\GoalPage.xaml
 
+[D:/курсач/XamarinProjects/NutritionTracker/NutritionTrackerMAUI/Views/HabitsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Views.HabitsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\HabitsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\HabitsPage.xaml
+
 [D:/курсач/XamarinProjects/NutritionTracker/NutritionTrackerMAUI/Views/LoginPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = NutritionTrackerMAUI.Views.LoginPage.xaml

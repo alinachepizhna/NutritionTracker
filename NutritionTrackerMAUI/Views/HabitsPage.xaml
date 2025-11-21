@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutritionTrackerMAUI.Views.HabitsPage"
+             Title="Мої Звички"
+             BackgroundColor="#F0F0F5">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <Frame Grid.Row="0" Margin="15,15,15,5" Padding="15" CornerRadius="15" HasShadow="False" BackgroundColor="White">
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Text="Мій прогрес сьогодні" FontAttributes="Bold" FontSize="16" TextColor="Black"/>
+                    <Label Grid.Column="1" Text="{Binding ProgressText}" FontAttributes="Bold" TextColor="#4CAF50"/>
+                </Grid>
+
+                <ProgressBar Progress="{Binding ProgressValue}" ProgressColor="#4CAF50" ScaleY="2"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding HabitsCollection}" Margin="10,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Видалити" BackgroundColor="#FF5252" Clicked="OnDeleteHabit"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <Frame Margin="0,5" Padding="15" CornerRadius="20" HasShadow="True"
+                               BackgroundColor="{Binding CardColor}" BorderColor="Transparent">
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+
+                                <Label Grid.Column="0" Text="{Binding Habit.Icon}"
+                                       FontSize="28" VerticalOptions="Center" Margin="0,0,15,0"/>
+
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding Habit.Title}"
+                                           FontSize="18" FontAttributes="Bold"
+                                           TextColor="{Binding TextColor}"/>
+
+                                    <Label Text="{Binding Habit.Description}"
+                                           FontSize="12" TextColor="Gray"
+                                           LineBreakMode="TailTruncation"
+                                           IsVisible="{Binding Habit.Description, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"/>
+                                    <HorizontalStackLayout Spacing="8" Margin="0,2,0,0">
+                                        <Label Text="{Binding Streak, StringFormat='🔥 {0} днів'}"
+                                               FontSize="12" TextColor="#FF9800" FontAttributes="Bold"/>
+                                        <Label Text="{Binding FrequencyText}"
+                                               FontSize="12" TextColor="Gray" FontAttributes="Italic"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+
+                                <Border Grid.Column="2"
+                                        HeightRequest="44" WidthRequest="44"
+                                        StrokeShape="RoundRectangle 22"
+                                        Stroke="{Binding TextColor}"
+                                        StrokeThickness="2"
+                                        BackgroundColor="Transparent"
+                                        VerticalOptions="Center">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnToggleHabit"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="✔"
+                                           TextColor="{Binding TextColor}"
+                                           FontSize="24" FontAttributes="Bold"
+                                           HorizontalOptions="Center" VerticalOptions="Center"
+                                           IsVisible="{Binding IsCompleted}"/>
+                                </Border>
+                            </Grid>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="2" Text="+ Нова звичка"
+                Clicked="OnAddHabitClicked"
+                Margin="20" CornerRadius="25" HeightRequest="50"
+                BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold"/>
+    </Grid>
+</ContentPage>

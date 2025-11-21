@@ -313,3 +313,4 @@ D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-ios\iossimulator-x64\NutritionTrackerMAUI.pdb
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-ios\iossimulator-x64\NutritionTrackerMAUI.genruntimeconfig.cache
 D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-ios\iossimulator-x64\ref\NutritionTrackerMAUI.dll
+D:\курсач\XamarinProjects\NutritionTracker\NutritionTrackerMAUI\obj\Debug\net9.0-ios\iossimulator-x64\build-signature\signature
