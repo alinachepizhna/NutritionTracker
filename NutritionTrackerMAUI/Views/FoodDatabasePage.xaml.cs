@@ -7,16 +7,25 @@ namespace NutritionTrackerMAUI.Views
     public partial class FoodDatabasePage : ContentPage
     {
         private readonly SqliteDatabaseService _db;
-        private readonly User _user; 
+        private readonly User _user;
         private List<FoodItem> _allItems = new();
         public ObservableCollection<FoodItem> FilteredItems { get; set; } = new();
         private string _selectedCategory = "Всі";
         private UserDietarySettings _dietSettings;
-        public FoodDatabasePage(User user, SqliteDatabaseService db)
+
+        // Поле для збереження режиму
+        private bool _isSelectionMode;
+
+        // ✅ ВИПРАВЛЕНИЙ КОНСТРУКТОР: Додано параметр isSelectionMode = false
+        public FoodDatabasePage(User user, SqliteDatabaseService db, bool isSelectionMode = false)
         {
             InitializeComponent();
-            _user = user; 
+            _user = user;
             _db = db;
+
+            // ✅ Зберігаємо передане значення
+            _isSelectionMode = isSelectionMode;
+
             ProductsCollection.ItemsSource = FilteredItems;
             CreateCategoryChips();
         }
@@ -129,8 +138,10 @@ namespace NutritionTrackerMAUI.Views
 
         private async void OnProductTapped(object sender, TappedEventArgs e)
         {
+            // 1. Отримуємо продукт
             if (e.Parameter is not FoodItem item) return;
 
+            // 2. Перевірка на алергени
             List<string> warnings = new List<string>();
 
             if (_dietSettings != null)
@@ -150,41 +161,45 @@ namespace NutritionTrackerMAUI.Views
                     "Так, додати",
                     "Ні, скасувати");
 
-                if (!proceed) return; 
+                if (!proceed) return;
             }
 
+            // 3. Запитуємо вагу
             string weightStr = await DisplayPromptAsync(item.Name, "Введіть вагу (грам):", keyboard: Keyboard.Numeric);
 
             if (double.TryParse(weightStr, out double weight))
             {
-                double factor = weight / 100.0;
-
-                double finalCals = item.Calories * factor;
-                double finalProt = item.Protein * factor;
-                double finalFat = item.Fat * factor;
-                double finalCarbs = item.Carbs * factor;
-
-                bool add = await DisplayAlert("Додати?",
-                    $"{weight}г - це {Math.Round(finalCals)} ккал. Додати в щоденник?", "Так", "Ні");
-
-                if (add)
+                // ✅ ЛОГІКА КОНСТРУКТОРА СТРАВ
+                if (_isSelectionMode)
                 {
-                    var logEntry = new FoodLogEntry
-                    {
-                        UserId = _user.Id,
-                        Date = DateTime.Now,
-                        MealType = "З бази",
-                        Name = $"{item.Name} ({weight}г)",
-                        Calories = Math.Round(finalCals),
-                        Protein = Math.Round(finalProt),
-                        Fat = Math.Round(finalFat),
-                        Carbs = Math.Round(finalCarbs)
-                    };
-
-                    await _db.AddFoodLogAsync(logEntry);
-                    await DisplayAlert("Готово", "Продукт додано до щоденника!", "OK");
+                    // Повертаємо дані назад через MessagingCenter
+                    MessagingCenter.Send(this, "AddIngredient", (item, weight));
                     await Navigation.PopAsync();
+                    return; // Виходимо, щоб не додавати в щоденник
                 }
+
+                // --- ЗВИЧАЙНИЙ РЕЖИМ (ЗАПИС В ЩОДЕННИК) ---
+                string mealType = await DisplayActionSheet("Куди додати?", "Скасувати", null,
+                    "Сніданок", "Обід", "Вечеря", "Перекус");
+
+                if (mealType == "Скасувати" || mealType == null) return;
+
+                double factor = weight / 100.0;
+                var logEntry = new FoodLogEntry
+                {
+                    UserId = _user.Id,
+                    Date = DateTime.Now,
+                    MealType = mealType,
+                    Name = $"{item.Name} ({weight}г)",
+                    Calories = Math.Round(item.Calories * factor),
+                    Protein = Math.Round(item.Protein * factor),
+                    Fat = Math.Round(item.Fat * factor),
+                    Carbs = Math.Round(item.Carbs * factor)
+                };
+
+                await _db.AddFoodLogAsync(logEntry);
+                await DisplayAlert("Готово", $"{item.Name} додано в {mealType}", "OK");
+                await Navigation.PopAsync();
             }
         }
     }

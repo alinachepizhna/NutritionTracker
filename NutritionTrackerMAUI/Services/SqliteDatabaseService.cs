@@ -29,12 +29,37 @@ namespace NutritionTrackerMAUI.Services
             _database.CreateTableAsync<FoodLogEntry>().Wait();
             _database.CreateTableAsync<FoodItem>().Wait();
             _database.CreateTableAsync<UserDietarySettings>().Wait();
+            _database.CreateTableAsync<Dish>().Wait();
+            _database.CreateTableAsync<DishIngredient>().Wait();
         }
 
         // ===============================
         // 🧩 --- КОРИСТУВАЧІ ---
         // ===============================
+        public Task<List<Dish>> GetUserDishesAsync(int userId) =>
+    _database.Table<Dish>().Where(d => d.UserId == userId).ToListAsync();
 
+        // Збереження страви разом з інгредієнтами
+        public async Task SaveDishAsync(Dish dish, List<DishIngredient> ingredients)
+        {
+            await _database.InsertAsync(dish); // Спочатку зберігаємо страву, щоб отримати ID
+
+            foreach (var ing in ingredients)
+            {
+                ing.DishId = dish.Id; // Прив'язуємо інгредієнт до ID страви
+            }
+            await _database.InsertAllAsync(ingredients);
+        }
+
+        public async Task DeleteDishAsync(Dish dish)
+        {
+            // Видаляємо інгредієнти
+            var ingredients = await _database.Table<DishIngredient>().Where(i => i.DishId == dish.Id).ToListAsync();
+            foreach (var i in ingredients) await _database.DeleteAsync(i);
+
+            // Видаляємо саму страву
+            await _database.DeleteAsync(dish);
+        }
         public Task<int> AddUserAsync(User user) => _database.InsertAsync(user);
 
         public Task<User?> GetUserAsync(string firstName, string lastName) =>
