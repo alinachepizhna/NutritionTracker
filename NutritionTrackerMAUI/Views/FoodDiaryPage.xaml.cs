@@ -12,7 +12,6 @@ namespace NutritionTrackerMAUI.Views
         public ObservableCollection<FoodLogEntry> TodaysFood { get; set; } = new();
         private async void OnOpenDatabaseClicked(object sender, EventArgs e)
         {
-            // Переходимо на сторінку бази, передаючи User і DB
             await Navigation.PushAsync(new FoodDatabasePage(_user, _db));
         }
         public FoodDiaryPage(User user, SqliteDatabaseService db)
@@ -31,25 +30,20 @@ namespace NutritionTrackerMAUI.Views
 
         private async Task LoadDataAsync()
         {
-            // 1. Завантажуємо список їжі на сьогодні
             var logs = await _db.GetFoodLogsAsync(_user.Id, DateTime.Today);
             TodaysFood.Clear();
             foreach (var log in logs) TodaysFood.Add(log);
 
-            // 2. Отримуємо дані користувача для розрахунку норм
             var anthropometry = (await _db.GetUserDataAsync(_user.Id)).OrderByDescending(a => a.Date).FirstOrDefault();
             var (goal, strategy) = await _db.GetLatestGoalWithStrategyAsync(_user.Id);
 
-            // 3. Розраховуємо цілі
             var targets = NutritionCalculator.CalculateTargets(_user, anthropometry, goal, strategy);
 
-            // 4. Рахуємо скільки вже з'їли
             double eatenCals = logs.Sum(x => x.Calories);
             double eatenProt = logs.Sum(x => x.Protein);
             double eatenFat = logs.Sum(x => x.Fat);
             double eatenCarbs = logs.Sum(x => x.Carbs);
 
-            // 5. Оновлюємо UI
             CaloriesLabel.Text = $"{eatenCals} / {targets.Calories} ккал";
             CaloriesProgress.Progress = targets.Calories > 0 ? eatenCals / targets.Calories : 0;
 
@@ -60,7 +54,6 @@ namespace NutritionTrackerMAUI.Views
 
         private async void OnAddFoodClicked(object sender, EventArgs e)
         {
-            // Спрощений ввід для прикладу (в ідеалі - окрема сторінка)
             string name = await DisplayPromptAsync("Додати їжу", "Назва продукту:");
             if (string.IsNullOrWhiteSpace(name)) return;
 
@@ -70,23 +63,21 @@ namespace NutritionTrackerMAUI.Views
             {
                 UserId = _user.Id,
                 Date = DateTime.Now,
-                MealType = "Перекус", // Можна зробити вибір через ActionSheet
+                MealType = "Перекус", 
                 Name = name,
                 Calories = cals,
-                Protein = cals * 0.07, // Приблизна заглушка
+                Protein = cals * 0.07, 
                 Fat = cals * 0.03,
                 Carbs = cals * 0.10
             };
 
             await _db.AddFoodLogAsync(newLog);
-            await LoadDataAsync(); // Оновити екран
+            await LoadDataAsync(); 
         }
         private async void OnFoodItemTapped(object sender, TappedEventArgs e)
         {
-            // Отримуємо запис, на який натиснули
             if (e.Parameter is not FoodLogEntry selectedEntry) return;
 
-            // Показуємо меню дій
             string action = await DisplayActionSheet(
                 $"Меню: {selectedEntry.Name}",
                 "Скасувати",
@@ -141,17 +132,10 @@ namespace NutritionTrackerMAUI.Views
                                                          keyboard: Keyboard.Numeric);
 
             if (!double.TryParse(newCalsStr, out double newCals)) return;
-
-            // Оновлюємо калорії
             entry.Calories = newCals;
-
-            // Автоматично перераховуємо БЖВ пропорційно (якщо це була заглушка)
-            // Або можна залишити старі, якщо хочете редагувати їх окремо.
-            // Тут для прикладу перерахуємо за тією ж логікою, що при створенні:
             entry.Protein = newCals * 0.07;
             entry.Fat = newCals * 0.03;
             entry.Carbs = newCals * 0.10;
-
             await _db.UpdateFoodLogAsync(entry);
             await LoadDataAsync();
         }

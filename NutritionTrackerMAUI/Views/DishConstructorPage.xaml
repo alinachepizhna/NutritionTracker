@@ -5,46 +5,53 @@
              Title="Нова страва"
              BackgroundColor="#F0F0F5">
 
-    <Grid RowDefinitions="Auto, *, Auto">
-        <Frame Margin="10" Padding="10" CornerRadius="10" HasShadow="True">
-            <Entry x:Name="DishNameEntry" Placeholder="Назва страви (напр. Борщ)" FontAttributes="Bold"/>
-        </Frame>
+	<Grid RowDefinitions="Auto, *, Auto">
+		<Frame Grid.Row="0" Margin="10" Padding="10" CornerRadius="10" HasShadow="True" BackgroundColor="White">
+			<Entry x:Name="DishNameEntry" Placeholder="Назва страви (напр. Борщ)" FontAttributes="Bold"/>
+		</Frame>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="10" Spacing="10">
-                <Label Text="Інгредієнти:" FontAttributes="Bold"/>
-                
-                <CollectionView x:Name="IngredientsCollection">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame Padding="10" Margin="0,2" CornerRadius="5" BackgroundColor="White">
-                                <Grid ColumnDefinitions="*, Auto, Auto">
-                                    <Label Text="{Binding Name}" VerticalOptions="Center"/>
-                                    <Label Grid.Column="1" Text="{Binding Weight, StringFormat='{0}г'}" Margin="10,0" TextColor="Gray"/>
-                                    <Button Grid.Column="2" Text="❌" 
+		<ScrollView Grid.Row="1">
+			<VerticalStackLayout Padding="10" Spacing="10">
+				<Label Text="Інгредієнти:" FontAttributes="Bold" TextColor="#D32F2F"/>
+
+				<StackLayout BindableLayout.ItemsSource="{Binding Ingredients}" Spacing="5">
+					<BindableLayout.ItemTemplate>
+						<DataTemplate>
+							<Frame Padding="10" CornerRadius="8" BackgroundColor="White" HasShadow="True" BorderColor="LightGray">
+								<Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10">
+									<Label Grid.Column="0" Text="{Binding Name}" VerticalOptions="Center" FontSize="16" LineBreakMode="TailTruncation"/>
+
+									<Label Grid.Column="1" Text="{Binding Weight, StringFormat='{0}г'}"
+                                           TextColor="Gray" VerticalOptions="Center" FontAttributes="Bold"/>
+
+									<Button Grid.Column="2" Text="❌"
                                             BackgroundColor="Transparent" TextColor="Red"
-                                            Clicked="OnRemoveIngredientClicked" CommandParameter="{Binding .}"/>
-                                </Grid>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                            FontSize="14" WidthRequest="40" HeightRequest="40"
+                                            Padding="0"
+                                            Clicked="OnRemoveIngredientClicked"
+                                            CommandParameter="{Binding .}"/>
+								</Grid>
+							</Frame>
+						</DataTemplate>
+					</BindableLayout.ItemTemplate>
+				</StackLayout>
 
-                <Button Text="+ Додати інгредієнт" 
+				<Button Text="+ Додати інгредієнт"
                         Clicked="OnAddIngredientClicked"
-                        BackgroundColor="Gray" TextColor="White" CornerRadius="10"/>
-            </VerticalStackLayout>
-        </ScrollView>
+                        BackgroundColor="Gray" TextColor="White" CornerRadius="10"
+                        Margin="0,10"/>
+			</VerticalStackLayout>
+		</ScrollView>
 
-        <Frame Grid.Row="2" Margin="10" CornerRadius="15" BackgroundColor="White" HasShadow="True">
-            <VerticalStackLayout Spacing="10">
-                <Label x:Name="TotalLabel" Text="Разом: 0 ккал (0г)" HorizontalOptions="Center" FontAttributes="Bold" FontSize="18"/>
-                <Label x:Name="MacrosLabel" Text="Б:0 Ж:0 В:0" HorizontalOptions="Center" FontSize="12"/>
-                
-                <Button Text="💾 Зберегти страву" 
+		<Frame Grid.Row="2" Margin="10" CornerRadius="15" BackgroundColor="White" HasShadow="True" BorderColor="#D32F2F">
+			<VerticalStackLayout Spacing="10">
+				<Label x:Name="TotalLabel" Text="Разом: 0 ккал (0г)" HorizontalOptions="Center" FontAttributes="Bold" FontSize="18" TextColor="#D32F2F"/>
+				<Label x:Name="MacrosLabel" Text="Б:0 Ж:0 В:0" HorizontalOptions="Center" FontSize="14" TextColor="Gray"/>
+
+				<Button Text="💾 Зберегти страву"
                         BackgroundColor="#D32F2F" TextColor="White" CornerRadius="20"
                         Clicked="OnSaveDishClicked"/>
-            </VerticalStackLayout>
-        </Frame>
-    </Grid>
+			</VerticalStackLayout>
+		</Frame>
+	</Grid>
 </ContentPage>

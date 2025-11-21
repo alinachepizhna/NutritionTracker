@@ -8,7 +8,9 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="⚙️ Дієта" Order="Primary" Clicked="OnDietarySettingsClicked"/>
     </ContentPage.ToolbarItems>
+
     <Grid RowDefinitions="Auto, *">
+
         <Frame Grid.Row="0" Margin="10" CornerRadius="15" BackgroundColor="White" HasShadow="True">
             <VerticalStackLayout Spacing="10">
                 <Label Text="Підсумок дня" FontAttributes="Bold" FontSize="18" TextColor="#D32F2F"/>
@@ -17,20 +19,21 @@
                     <Label Text="Калорії" FontAttributes="Bold"/>
                     <Label x:Name="CaloriesLabel" Text="0 / 0 ккал" Grid.Column="1" HorizontalOptions="End"/>
                 </Grid>
+
                 <ProgressBar x:Name="CaloriesProgress" ProgressColor="#D32F2F" ScaleY="1.5"/>
 
                 <Grid ColumnDefinitions="*,*,*">
                     <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
                         <Label Text="Білки" FontSize="12"/>
-                        <Label x:Name="ProteinLabel" Text="0 / 0г" FontAttributes="Bold" TextColor="Blue"/>
+                        <Label x:Name="ProteinLabel" Text="0г" FontAttributes="Bold" TextColor="Blue"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
                         <Label Text="Жири" FontSize="12"/>
-                        <Label x:Name="FatLabel" Text="0 / 0г" FontAttributes="Bold" TextColor="Orange"/>
+                        <Label x:Name="FatLabel" Text="0г" FontAttributes="Bold" TextColor="Orange"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
                         <Label Text="Вуглеводи" FontSize="12"/>
-                        <Label x:Name="CarbsLabel" Text="0 / 0г" FontAttributes="Bold" TextColor="Green"/>
+                        <Label x:Name="CarbsLabel" Text="0г" FontAttributes="Bold" TextColor="Green"/>
                     </VerticalStackLayout>
                 </Grid>
             </VerticalStackLayout>
@@ -60,25 +63,29 @@
                 <CollectionView x:Name="FoodCollection">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame Margin="0,5" Padding="10" CornerRadius="10" HasShadow="True">
+                            <Frame Margin="0,5" Padding="10" CornerRadius="10" HasShadow="True" BackgroundColor="White">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnFoodItemTapped"
-                                                          CommandParameter="{Binding .}"/>
+                                    <TapGestureRecognizer Tapped="OnFoodItemTapped" CommandParameter="{Binding .}"/>
                                 </Frame.GestureRecognizers>
+
                                 <Grid ColumnDefinitions="*, Auto">
                                     <VerticalStackLayout>
                                         <Label Text="{Binding MealType}" FontSize="10" TextColor="Gray"/>
                                         <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16"/>
                                     </VerticalStackLayout>
+
                                     <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
-                                        <Label Text="{Binding Calories, StringFormat='{0} ккал'}" FontAttributes="Bold" TextColor="#D32F2F"/>
-                                        <Label Text="{Binding Protein, StringFormat='Б:{0:F0} Ж:{1:F0} В:{2:F0}'}" FontSize="10"/>
+                                        <Label Text="{Binding Calories, StringFormat='{0} ккал'}" 
+                                               FontAttributes="Bold" TextColor="#D32F2F"/>
+                                        <Label Text="{Binding Protein, StringFormat='Б:{0:F0} Ж:{1:F0} В:{2:F0}'}" 
+                                               FontSize="10" TextColor="Black"/>
                                     </VerticalStackLayout>
                                 </Grid>
                             </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

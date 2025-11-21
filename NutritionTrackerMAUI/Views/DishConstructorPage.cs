@@ -1,4 +1,4 @@
-using NutritionTrackerMAUI.Models;
+п»їusing NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System.Collections.ObjectModel;
 
@@ -9,10 +9,9 @@ namespace NutritionTrackerMAUI.Views
         private readonly SqliteDatabaseService _db;
         private readonly User _user;
 
-        // Список інгредієнтів для відображення на екрані
+        // РЎРїРёСЃРѕРє С–РЅРіСЂРµРґС–С”РЅС‚С–РІ (Public Property РґР»СЏ Binding)
         public ObservableCollection<DishIngredient> Ingredients { get; set; } = new();
 
-        // Змінні для підрахунку підсумків
         double _totalCals = 0, _totalProt = 0, _totalFat = 0, _totalCarbs = 0, _totalWeight = 0;
 
         public DishConstructorPage(User user, SqliteDatabaseService db)
@@ -21,17 +20,17 @@ namespace NutritionTrackerMAUI.Views
             _user = user;
             _db = db;
 
-            // Прив'язуємо список до UI
-            IngredientsCollection.ItemsSource = Ingredients;
+            this.BindingContext = this;
 
-            // ПІДПИСКА НА ПОВІДОМЛЕННЯ: Очікуємо дані від FoodDatabasePage
-            MessagingCenter.Subscribe<FoodDatabasePage, (FoodItem, double)>(this, "AddIngredient", (sender, arg) =>
+            MessagingCenter.Subscribe<object, (FoodItem, double)>(this, "AddIngredient", (sender, arg) =>
             {
-                AddIngredientToDish(arg.Item1, arg.Item2);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    AddIngredientToDish(arg.Item1, arg.Item2);
+                });
             });
         }
 
-        // Цей метод додає продукт у список інгредієнтів
         private void AddIngredientToDish(FoodItem item, double weight)
         {
             var ingredient = new DishIngredient
@@ -41,7 +40,6 @@ namespace NutritionTrackerMAUI.Views
                 Weight = weight
             };
 
-            // Розрахунок БЖВ цього інгредієнта (база на 100г)
             double factor = weight / 100.0;
 
             _totalCals += item.Calories * factor;
@@ -56,56 +54,45 @@ namespace NutritionTrackerMAUI.Views
 
         private void UpdateTotals()
         {
-            TotalLabel.Text = $"Разом: {Math.Round(_totalCals)} ккал ({_totalWeight}г)";
-            MacrosLabel.Text = $"Б:{Math.Round(_totalProt)} Ж:{Math.Round(_totalFat)} В:{Math.Round(_totalCarbs)}";
+            if (TotalLabel != null)
+                TotalLabel.Text = $"Р Р°Р·РѕРј: {Math.Round(_totalCals)} РєРєР°Р» ({_totalWeight}Рі)";
+
+            if (MacrosLabel != null)
+                MacrosLabel.Text = $"Р‘:{Math.Round(_totalProt)} Р–:{Math.Round(_totalFat)} Р’:{Math.Round(_totalCarbs)}";
         }
 
-        // Кнопка "+ Додати інгредієнт"
         private async void OnAddIngredientClicked(object sender, EventArgs e)
         {
-            // Відкриваємо базу продуктів у режимі ВИБОРУ (isSelectionMode = true)
+            // Р’С–РґРєСЂРёРІР°С”РјРѕ Р±Р°Р·Сѓ РІ СЂРµР¶РёРјС– РІРёР±РѕСЂСѓ
             await Navigation.PushAsync(new FoodDatabasePage(_user, _db, isSelectionMode: true));
         }
 
-        // Кнопка видалення (червоний хрестик)
         private void OnRemoveIngredientClicked(object sender, EventArgs e)
         {
             if (sender is Button btn && btn.BindingContext is DishIngredient ing)
             {
-                // ВАЖЛИВО: Треба відняти калорії перед видаленням (тут спрощено, краще перерахувати весь список)
-                // Для простоти просто видаляємо зі списку, але в ідеалі треба перерахувати _totalCals заново.
                 Ingredients.Remove(ing);
 
-                // Перерахунок з нуля (надійніше)
-                RecalculateTotals();
+                _totalWeight -= ing.Weight;
+                if (Ingredients.Count == 0)
+                {
+                    _totalCals = 0; _totalProt = 0; _totalFat = 0; _totalCarbs = 0; _totalWeight = 0;
+                }
+
+                UpdateTotals();
             }
         }
 
-        private void RecalculateTotals()
-        {
-            // Скидаємо
-            _totalCals = 0; _totalProt = 0; _totalFat = 0; _totalCarbs = 0; _totalWeight = 0;
-
-            // Тут потрібен доступ до оригінального FoodItem, щоб порахувати заново.
-            // Оскільки в DishIngredient ми зберегли тільки Name і Weight, то для точного перерахунку
-            // краще зберігати калорії в DishIngredient теж.
-            // Для MVP поки залишимо так, але майте на увазі.
-
-            // Оновлюємо текст (поки буде 0, якщо видалили все)
-            if (Ingredients.Count == 0) UpdateTotals();
-        }
-
-        // Кнопка "Зберегти страву"
         private async void OnSaveDishClicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(DishNameEntry.Text))
             {
-                await DisplayAlert("Помилка", "Введіть назву страви", "OK");
+                await DisplayAlert("РџРѕРјРёР»РєР°", "Р’РІРµРґС–С‚СЊ РЅР°Р·РІСѓ СЃС‚СЂР°РІРё", "OK");
                 return;
             }
             if (Ingredients.Count == 0)
             {
-                await DisplayAlert("Помилка", "Додайте хоча б один інгредієнт", "OK");
+                await DisplayAlert("РџРѕРјРёР»РєР°", "Р”РѕРґР°Р№С‚Рµ С…РѕС‡Р° Р± РѕРґРёРЅ С–РЅРіСЂРµРґС–С”РЅС‚", "OK");
                 return;
             }
 
@@ -121,15 +108,8 @@ namespace NutritionTrackerMAUI.Views
             };
 
             await _db.SaveDishAsync(dish, Ingredients.ToList());
-            await DisplayAlert("Успіх", "Страву збережено!", "OK");
+            await DisplayAlert("РЈСЃРїС–С…", "РЎС‚СЂР°РІСѓ Р·Р±РµСЂРµР¶РµРЅРѕ!", "OK");
             await Navigation.PopAsync();
-        }
-
-        // Відписуємося при закритті сторінки, щоб уникнути витоку пам'яті
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-            MessagingCenter.Unsubscribe<FoodDatabasePage, (FoodItem, double)>(this, "AddIngredient");
         }
     }
 }

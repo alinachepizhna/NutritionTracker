@@ -1,4 +1,6 @@
-﻿using NutritionTrackerMAUI.Models;
+﻿#pragma warning disable CS0618
+
+using NutritionTrackerMAUI.Models;
 using NutritionTrackerMAUI.Services;
 using System.Collections.ObjectModel;
 
@@ -12,18 +14,13 @@ namespace NutritionTrackerMAUI.Views
         public ObservableCollection<FoodItem> FilteredItems { get; set; } = new();
         private string _selectedCategory = "Всі";
         private UserDietarySettings _dietSettings;
-
-        // Поле для збереження режиму
         private bool _isSelectionMode;
 
-        // ✅ ВИПРАВЛЕНИЙ КОНСТРУКТОР: Додано параметр isSelectionMode = false
         public FoodDatabasePage(User user, SqliteDatabaseService db, bool isSelectionMode = false)
         {
             InitializeComponent();
             _user = user;
             _db = db;
-
-            // ✅ Зберігаємо передане значення
             _isSelectionMode = isSelectionMode;
 
             ProductsCollection.ItemsSource = FilteredItems;
@@ -40,8 +37,37 @@ namespace NutritionTrackerMAUI.Views
 
         private async Task LoadDataAsync()
         {
-            _allItems = await _db.GetAllFoodItemsAsync();
+            var products = await _db.GetAllFoodItemsAsync();
+
+            var dishes = await _db.GetUserDishesAsync(_user.Id);
+
+            var dishItems = dishes.Select(d => new FoodItem
+            {
+                Name = d.Name,
+                Category = "Готові страви",
+                IsCustom = true,
+                Calories = CalculatePer100g(d.TotalCalories, d.TotalWeight),
+                Protein = CalculatePer100g(d.TotalProtein, d.TotalWeight),
+                Fat = CalculatePer100g(d.TotalFat, d.TotalWeight),
+                Carbs = CalculatePer100g(d.TotalCarbs, d.TotalWeight)
+            }).ToList();
+
+            _allItems = new List<FoodItem>();
+            _allItems.AddRange(dishItems);
+            _allItems.AddRange(products);
+
             ApplyFilter();
+        }
+
+        private double CalculatePer100g(double totalValue, double totalWeight)
+        {
+            if (totalWeight <= 0) return 0;
+            return Math.Round((totalValue / totalWeight) * 100, 1);
+        }
+
+        private async void OnCreateDishClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new DishConstructorPage(_user, _db));
         }
 
         private void CreateCategoryChips()
@@ -70,9 +96,9 @@ namespace NutritionTrackerMAUI.Views
         {
             _selectedCategory = category;
 
-            foreach (Button btn in CategoryStack.Children)
+            foreach (var view in CategoryStack.Children)
             {
-                btn.BackgroundColor = Colors.LightGray;
+                if (view is Button btn) btn.BackgroundColor = Colors.LightGray;
             }
             clickedBtn.BackgroundColor = Colors.DarkRed;
 
@@ -114,34 +140,45 @@ namespace NutritionTrackerMAUI.Views
             string fatStr = await DisplayPromptAsync("Жири", "Жири на 100г:", keyboard: Keyboard.Numeric);
             string carbStr = await DisplayPromptAsync("Вуглеводи", "Вуглеводи на 100г:", keyboard: Keyboard.Numeric);
 
-            if (double.TryParse(calStr, out double cal) &&
-                double.TryParse(protStr, out double prot) &&
-                double.TryParse(fatStr, out double fat) &&
-                double.TryParse(carbStr, out double carb))
-            {
-                var newItem = new FoodItem
-                {
-                    Name = name,
-                    Category = "Своє",
-                    Calories = cal,
-                    Protein = prot,
-                    Fat = fat,
-                    Carbs = carb,
-                    IsCustom = true
-                };
+            bool isCalValid = double.TryParse(calStr, out double cal);
+            bool isProtValid = double.TryParse(protStr, out double prot);
+            bool isFatValid = double.TryParse(fatStr, out double fat);
+            bool isCarbValid = double.TryParse(carbStr, out double carb);
 
+            if (!isCalValid || !isProtValid || !isFatValid || !isCarbValid)
+            {
+                await DisplayAlert("Помилка", "Будь ласка, введіть коректні цифри для всіх полів (БЖВ). Використовуйте кому або крапку.", "OK");
+                return;
+            }
+
+            var newItem = new FoodItem
+            {
+                Name = name,
+                Category = "Своє",
+                Calories = cal,
+                Protein = prot,
+                Fat = fat,
+                Carbs = carb,
+                IsCustom = true
+            };
+
+            try
+            {
                 await _db.AddFoodItemAsync(newItem);
-                await DisplayAlert("Успіх", "Продукт додано в базу!", "OK");
+                await DisplayAlert("Успіх", $"Продукт '{name}' збережено в базу!", "OK");
+
                 await LoadDataAsync();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Помилка БД", ex.Message, "OK");
             }
         }
 
         private async void OnProductTapped(object sender, TappedEventArgs e)
         {
-            // 1. Отримуємо продукт
             if (e.Parameter is not FoodItem item) return;
 
-            // 2. Перевірка на алергени
             List<string> warnings = new List<string>();
 
             if (_dietSettings != null)
@@ -164,21 +201,17 @@ namespace NutritionTrackerMAUI.Views
                 if (!proceed) return;
             }
 
-            // 3. Запитуємо вагу
             string weightStr = await DisplayPromptAsync(item.Name, "Введіть вагу (грам):", keyboard: Keyboard.Numeric);
 
             if (double.TryParse(weightStr, out double weight))
             {
-                // ✅ ЛОГІКА КОНСТРУКТОРА СТРАВ
                 if (_isSelectionMode)
                 {
-                    // Повертаємо дані назад через MessagingCenter
-                    MessagingCenter.Send(this, "AddIngredient", (item, weight));
+                    MessagingCenter.Send<object, (FoodItem, double)>(this, "AddIngredient", (item, weight));
                     await Navigation.PopAsync();
-                    return; // Виходимо, щоб не додавати в щоденник
+                    return;
                 }
 
-                // --- ЗВИЧАЙНИЙ РЕЖИМ (ЗАПИС В ЩОДЕННИК) ---
                 string mealType = await DisplayActionSheet("Куди додати?", "Скасувати", null,
                     "Сніданок", "Обід", "Вечеря", "Перекус");
 
